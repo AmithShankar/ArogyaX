@@ -13,13 +13,14 @@ function trimTrailingSlash(value: string) {
 }
 
 export function getServerApiBaseUrl() {
-  return trimTrailingSlash(process.env.NEXT_PUBLIC_API_BASE_URL || API_DEV_ORIGIN);
+  const envUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_URL;
+  if (envUrl) return trimTrailingSlash(envUrl);
+
+  // Fallback for local development
+  return trimTrailingSlash(API_DEV_ORIGIN);
 }
 
 export function getClientApiBaseUrl() {
-  if (typeof window !== "undefined") {
-    return API_PROXY_PREFIX;
-  }
-
+  // Choice 2: Always return the full URL from env, no shorthand /api
   return getServerApiBaseUrl();
 }
