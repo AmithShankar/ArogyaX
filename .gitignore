@@ -1,0 +1,49 @@
+# ArogyaX Master Gitignore
+
+# --- IDEs, Editor & AI Context ---
+.vscode/
+.claude/
+.code-review-graph/
+.history/
+.idea/
+*.swp
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- OS Specific ---
+.DS_Store
+Thumbs.db
+
+# --- Logs & Temp ---
+*.log
+scratch/
+
+# --- Environments (Global Security) ---
+.env
+.env.*
+!.env.example
+
+# --- Python / Backend Specific ---
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+ENV/
+Lib/
+Include/
+Scripts/
+pyvenv.cfg
+# Critical: Protect patient data
+Backend/uploads/
+
+# --- Node / Frontend Specific ---
+node_modules/
+.next/
+dist/
+build/
+out/
+Frontend/out/
+Frontend/.next/

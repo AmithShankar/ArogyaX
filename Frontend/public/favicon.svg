@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="arogyax-bg" x1="10" y1="6" x2="54" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#36C2E8" />
+      <stop offset="1" stop-color="#0F8DAE" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="#0F2232" />
+  <rect x="6" y="6" width="52" height="52" rx="14" fill="url(#arogyax-bg)" />
+  <path
+    d="M22.5 22.5C19.4624 22.5 17 24.9679 17 28.0125C17 35.1591 25.4379 40.5118 31.0198 45.0271C31.5966 45.4938 32.4034 45.4938 32.9802 45.0271C38.5621 40.5118 47 35.1591 47 28.0125C47 24.9679 44.5376 22.5 41.5 22.5C37.9938 22.5 35.9305 24.4901 34.6604 26.3551C33.4884 28.076 30.5116 28.076 29.3396 26.3551C28.0695 24.4901 26.0062 22.5 22.5 22.5Z"
+    fill="#F7FCFF"
+    fill-opacity="0.18"
+    stroke="#F7FCFF"
+    stroke-width="2.5"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M20 33H26L29 28L32 38L35.5 31L38 33H44"
+    stroke="#F7FCFF"
+    stroke-width="3"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>
