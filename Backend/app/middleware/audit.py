@@ -26,7 +26,8 @@ class AuditMiddleware(BaseHTTPMiddleware):
         )
 
         if (
-            request.url.path == "/"
+            request.method == "OPTIONS"
+            or request.url.path == "/"
             or request.url.path.startswith("/static")
             or is_prefetch
         ):

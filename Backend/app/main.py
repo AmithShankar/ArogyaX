@@ -51,19 +51,21 @@ def create_app() -> FastAPI:
 
 
 def configure_middleware(app: FastAPI) -> None:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins_list,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+        expose_headers=["*"],
+    )
+
     if settings.USE_PROXY_HEADERS:
         app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
     app.add_middleware(RateLimitMiddleware)
     app.add_middleware(AuditMiddleware)
     app.add_middleware(SecurityHeadersMiddleware)
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=settings.cors_origins_list,
-        allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allow_headers=["Content-Type", "Authorization", "Cookie"],
-    )
 
 
 def configure_exception_handlers(app: FastAPI) -> None:
