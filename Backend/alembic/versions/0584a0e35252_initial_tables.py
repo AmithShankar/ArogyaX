@@ -37,7 +37,6 @@ def upgrade() -> None:
                 "lab_tech",
                 "hospital_admin",
                 "owner",
-                "auditor",
                 name="user_role",
             ),
             autoincrement=False,
