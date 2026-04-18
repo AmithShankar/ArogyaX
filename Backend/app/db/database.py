@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from app.core.config import settings
 
 connect_args = {
-    "statement_cache_size": 0
+    "statement_cache_size": 0  # CRITICAL for PgBouncer/Supabase
 }
 if settings.DB_SSL_MODE == "require":
     connect_args["ssl"] = "require"
