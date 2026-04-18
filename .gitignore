@@ -32,9 +32,13 @@ __pycache__/
 venv/
 env/
 ENV/
-Lib/
+# Use specific patterns for virtual environments to avoid ignoring src/lib
 Include/
 Scripts/
+# Python build artifacts
+build/
+dist/
+*.egg-info/
 pyvenv.cfg
 # Critical: Protect patient data
 Backend/uploads/
