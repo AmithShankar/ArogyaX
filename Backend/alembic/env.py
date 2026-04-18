@@ -16,10 +16,8 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
-# Use sync psycopg2 URL for alembic (replace asyncpg driver)
-SYNC_URL = settings.ASYNC_DATABASE_URL.replace(
-    "postgresql+asyncpg", "postgresql+psycopg2"
-)
+# Use the dedicated sync DATABASE_URL for migrations
+SYNC_URL = settings.DATABASE_URL
 
 
 def run_migrations_offline() -> None:
