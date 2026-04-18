@@ -64,28 +64,6 @@ const nextConfig = {
       },
     ];
   },
-  async rewrites() {
-    const target = process.env.INTERNAL_BACKEND_URL;
-
-    if (!target && process.env.NODE_ENV === "development") {
-      // Allow startup but log a warning if in development
-      console.warn("\x1b[33m%s\x1b[0m", "⚠️  WARNING: INTERNAL_BACKEND_URL is not set in .env. API proxying will be disabled.");
-    } else if (!target) {
-      throw new Error("\n\n❌ [SSOT Error]: INTERNAL_BACKEND_URL is missing. \n Please add it to your .env file to enable API proxying. \n Example: INTERNAL_BACKEND_URL=http://localhost:8000\n\n");
-    }
-
-    return [
-      {
-        source: "/api/:path*",
-        destination: `${target}/:path*`,
-      },
-      {
-        source: "/files/:path*",
-        destination: `${target}/files/:path*`,
-      },
-
-    ];
-  },
 };
 
 export default nextConfig
