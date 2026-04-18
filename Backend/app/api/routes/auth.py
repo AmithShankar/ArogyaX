@@ -51,6 +51,7 @@ async def login(
         httponly=settings.AUTH_COOKIE_HTTPONLY,
         secure=settings.IS_PRODUCTION,
         samesite=settings.AUTH_COOKIE_SAMESITE,
+        domain=settings.AUTH_COOKIE_DOMAIN,
         path=settings.AUTH_COOKIE_PATH,
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
@@ -60,6 +61,7 @@ async def login(
         httponly=settings.AUTH_COOKIE_HTTPONLY,
         secure=settings.IS_PRODUCTION,
         samesite=settings.AUTH_COOKIE_SAMESITE,
+        domain=settings.AUTH_COOKIE_DOMAIN,
         path=settings.AUTH_COOKIE_PATH,
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
@@ -69,10 +71,14 @@ async def login(
 @router.post("/logout", status_code=status.HTTP_200_OK)
 async def logout(response: Response):
     response.delete_cookie(
-        key=settings.AUTH_COOKIE_NAME, path=settings.AUTH_COOKIE_PATH
+        key=settings.AUTH_COOKIE_NAME, 
+        path=settings.AUTH_COOKIE_PATH,
+        domain=settings.AUTH_COOKIE_DOMAIN
     )
     response.delete_cookie(
-        key=settings.PASSWORD_TYPE_COOKIE, path=settings.AUTH_COOKIE_PATH
+        key=settings.PASSWORD_TYPE_COOKIE, 
+        path=settings.AUTH_COOKIE_PATH,
+        domain=settings.AUTH_COOKIE_DOMAIN
     )
     return ok("ok")
 
@@ -103,6 +109,7 @@ async def change_password(
         httponly=settings.AUTH_COOKIE_HTTPONLY,
         secure=settings.IS_PRODUCTION,
         samesite=settings.AUTH_COOKIE_SAMESITE,
+        domain=settings.AUTH_COOKIE_DOMAIN,
         path=settings.AUTH_COOKIE_PATH,
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
@@ -112,6 +119,7 @@ async def change_password(
         httponly=settings.AUTH_COOKIE_HTTPONLY,
         secure=settings.IS_PRODUCTION,
         samesite=settings.AUTH_COOKIE_SAMESITE,
+        domain=settings.AUTH_COOKIE_DOMAIN,
         path=settings.AUTH_COOKIE_PATH,
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
