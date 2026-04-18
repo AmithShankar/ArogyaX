@@ -13,7 +13,7 @@ function trimTrailingSlash(value: string) {
 }
 
 export function getServerApiBaseUrl() {
-  const envUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_URL;
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
   if (envUrl) return trimTrailingSlash(envUrl);
 
   // Fallback for local development
