@@ -58,7 +58,7 @@ const nextConfig = {
           },
           {
             key: "Content-Security-Policy",
-            value: `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com; img-src 'self' data: blob: ${process.env.NEXT_PUBLIC_BACKEND_URL || ""}; connect-src 'self' ${process.env.NEXT_PUBLIC_BACKEND_URL || ""} http://localhost:* ws://localhost:*;`,
+            value: `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com; img-src 'self' data: blob: ${process.env.NEXT_PUBLIC_API_URL || ""}; connect-src 'self' ${process.env.NEXT_PUBLIC_API_URL || ""} http://localhost:* ws://localhost:*;`,
           },
         ],
       },
