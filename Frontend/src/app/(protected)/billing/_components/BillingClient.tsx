@@ -13,7 +13,7 @@ import {
     SortingState, useReactTable
 } from "@tanstack/react-table";
 import { Filter, Receipt, Search, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { getBillingColumns } from "./table/BillingColumns";
 
@@ -25,7 +25,13 @@ import { getInvoiceHtml } from "./templates/InvoiceHtmlTemplate";
 
 export function BillingClient() {
   const { permissions, user } = useAuth();
+  const [mounted, setMounted] = useState(false);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const [activeTab, setActiveTab] = useState("all");
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceWithPatient | null>(null);
   const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
@@ -105,6 +111,8 @@ export function BillingClient() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
+  
+  if (!mounted) return null;
 
   return (
     <div className="page-shell animate-fade-in">

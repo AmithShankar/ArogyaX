@@ -299,7 +299,12 @@ export function PatientProfileClient({
         }`}
       >
         <PatientSummary summary={summary} summaryLoading={summaryLoading} />
-        <PatientStatsCards charts={charts} prescriptions={prescriptions} invoices={invoices} />
+        <PatientStatsCards 
+          charts={charts} 
+          prescriptions={prescriptions} 
+          invoices={invoices} 
+          isSidebar={!!(summary || summaryLoading)}
+        />
       </section>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-5">

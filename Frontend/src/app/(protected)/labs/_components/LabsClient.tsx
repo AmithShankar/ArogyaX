@@ -16,7 +16,7 @@ import {
     ColumnFiltersState, getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, useReactTable
 } from "@tanstack/react-table";
 import { FlaskConical, Search, Upload, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LabPreviewDialog } from "./LabPreviewDialog";
 import { getLabsColumns } from "./LabsColumns";
 import { LabsDataTable } from "./LabsDataTable";
@@ -25,8 +25,13 @@ import { LabsDataTable } from "./LabsDataTable";
 
 export function LabsClient({ permissions, initialLabs }: LabsClientProps) {
   const { user } = useAuth();
+  const [mounted, setMounted] = useState(false);
   const [labs] = useState<LabEntry[]>(initialLabs);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -51,6 +56,8 @@ export function LabsClient({ permissions, initialLabs }: LabsClientProps) {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });
+
+  if (!mounted) return null;
 
   return (
     <div className="page-shell animate-fade-in">

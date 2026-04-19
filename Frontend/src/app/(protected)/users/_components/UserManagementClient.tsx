@@ -36,11 +36,12 @@ export function UserManagementClient({
   initialUsers,
 }: UserManagementClientProps) {
   const { user } = useAuth();
+  const [mounted, setMounted] = useState(false);
   const [users, setUsers] = useState<User[]>(initialUsers);
 
   useEffect(() => {
-    setUsers(initialUsers);
-  }, [initialUsers]);
+    setMounted(true);
+  }, []);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [generatedPassword, setGeneratedPassword] = useState("");
@@ -190,6 +191,8 @@ export function UserManagementClient({
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });
+  
+  if (!mounted) return null;
 
   return (
     <div className="page-shell animate-fade-in">

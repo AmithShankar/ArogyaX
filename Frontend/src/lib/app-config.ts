@@ -13,14 +13,22 @@ function trimTrailingSlash(value: string) {
 }
 
 export function getServerApiBaseUrl() {
+  // NEXT_PUBLIC_API_URL should point to the real backend URL (e.g., arogyax-api.amithshankar.in)
+  // for server-to-server communication.
   const envUrl = process.env.NEXT_PUBLIC_API_URL;
   if (envUrl) return trimTrailingSlash(envUrl);
 
-  // Fallback for local development
   return trimTrailingSlash(API_DEV_ORIGIN);
 }
 
 export function getClientApiBaseUrl() {
-  // Choice 2: Always return the full URL from env, no shorthand /api
+  // Use relative /api path in browser to take advantage of Vercel rewrites
+  // and maintain same-origin cookie behavior and simplified CORS.
+  if (typeof window !== "undefined") {
+    // If we're on the custom domain (not localhost), use the proxy
+    if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+      return API_PROXY_PREFIX;
+    }
+  }
   return getServerApiBaseUrl();
 }

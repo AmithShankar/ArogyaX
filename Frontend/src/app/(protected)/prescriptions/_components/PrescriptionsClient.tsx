@@ -37,6 +37,12 @@ export function PrescriptionsClient({
 }: PrescriptionsClientProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const [tab, setTab] = useState<string>(
     user?.role === "pharmacy" ? "active" : "all"
   );
@@ -175,6 +181,8 @@ export function PrescriptionsClient({
   }, [tab, table]);
 
   const filteredCount = table.getRowModel().rows.length;
+
+  if (!mounted) return null;
 
   return (
     <div className="page-shell animate-fade-in">

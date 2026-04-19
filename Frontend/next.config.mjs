@@ -31,7 +31,16 @@ const nextConfig = {
   poweredByHeader: false,
   compress: true,
   trailingSlash: false,
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`,
+      },
+    ];
+  },
   async headers() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     return [
       {
         source: "/(.*)",
@@ -58,7 +67,7 @@ const nextConfig = {
           },
           {
             key: "Content-Security-Policy",
-            value: `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com; img-src 'self' data: blob: ${process.env.NEXT_PUBLIC_API_URL || ""}; connect-src 'self' ${process.env.NEXT_PUBLIC_API_URL || ""} http://localhost:* ws://localhost:*;`,
+            value: `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com; img-src 'self' data: blob: ${apiUrl}; connect-src 'self' ${apiUrl} http://localhost:* ws://localhost:*;`,
           },
         ],
       },

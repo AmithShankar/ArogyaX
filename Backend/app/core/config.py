@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     AUTH_COOKIE_NAME: str = "auth-token"
     AUTH_COOKIE_PATH: str = "/"
     AUTH_COOKIE_HTTPONLY: bool = True
-    AUTH_COOKIE_SAMESITE: Literal["lax", "strict", "none"] = "lax"
+    AUTH_COOKIE_SAMESITE: Literal["lax", "strict", "none"] = "strict"
     AUTH_COOKIE_DOMAIN: str | None = None
     PASSWORD_TYPE_COOKIE: str = "password-type"
 

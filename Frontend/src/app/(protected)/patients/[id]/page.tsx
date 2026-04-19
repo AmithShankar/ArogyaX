@@ -38,7 +38,7 @@ export default async function PatientProfilePage({
   if (!patient) return notFound();
 
   // Fetch additional data in parallel but with individual error handling to prevent 500 from crashing the whole page
-  const [charts, prescriptions, invoices, summaryData] = await Promise.all([
+  const [charts, prescriptions, invoices] = await Promise.all([
     permissions?.canViewCharting
       ? fetchPatientCharts(id).catch((err) => {
           console.error("Error fetching charts:", err);
@@ -57,12 +57,6 @@ export default async function PatientProfilePage({
           return [];
         })
       : Promise.resolve([]),
-    permissions?.canViewCharting
-      ? fetchPatientSummary(id).catch((err) => {
-          console.error("Error fetching summary:", err);
-          return null;
-        })
-      : Promise.resolve(null),
   ]);
 
   return (
@@ -74,7 +68,7 @@ export default async function PatientProfilePage({
       initialCharts={charts}
       initialPrescriptions={prescriptions}
       initialInvoices={invoices}
-      initialSummary={summaryData}
+      initialSummary={null}
     />
   );
 }

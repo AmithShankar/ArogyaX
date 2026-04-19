@@ -28,11 +28,12 @@ export function PatientListClient({
   permissions,
   initialPatients,
 }: PatientListClientProps) {
+  const [mounted, setMounted] = useState(false);
   const [patients, setPatients] = useState<Patient[]>(initialPatients);
 
   useEffect(() => {
-    setPatients(initialPatients);
-  }, [initialPatients]);
+    setMounted(true);
+  }, []);
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -53,6 +54,8 @@ export function PatientListClient({
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });
+
+  if (!mounted) return null;
 
   return (
     <div className="page-shell animate-fade-in">
