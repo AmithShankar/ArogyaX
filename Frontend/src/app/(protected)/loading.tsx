@@ -2,7 +2,7 @@ import { HeartPulse } from "lucide-react";
 
 export default function ProtectedLoading() {
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background px-6">
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background px-6 backdrop-blur-md">
       <div className="relative mb-12 flex h-24 w-24 items-center justify-center">
         <div className="absolute inset-0 animate-ping rounded-full bg-primary/20" />
         <div className="absolute inset-0 -m-4 animate-ping rounded-full bg-primary/10 duration-1000" />

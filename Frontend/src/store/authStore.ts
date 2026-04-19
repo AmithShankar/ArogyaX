@@ -26,7 +26,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     });
   },
 
-  hydrate: async () => {
+  hydrate: async (force = false) => {
+    if (get().user && !force) {
+      set({ isLoading: false });
+      return;
+    }
     try {
       const currentUser = await meApi();
       get().setUser(currentUser);
