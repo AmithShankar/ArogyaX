@@ -1,7 +1,9 @@
 import {
+    fetchAllCharts,
     fetchAllPatientInvoices,
     fetchAllPatientPrescriptions,
-    fetchAuditLogs, fetchPatientCharts, fetchPatients
+    fetchAuditLogs,
+    fetchPatients
 } from "@/lib/server-api";
 import { getUser } from "@/lib/server-auth";
 import type { Metadata } from "next";
@@ -36,11 +38,7 @@ export default async function DashboardPage() {
   const patients = permissions.canViewPatients ? await fetchPatients() : [];
 
   const [allCharts, prescriptions, invoices, auditLogs] = await Promise.all([
-    permissions.canViewCharting
-      ? Promise.all(
-          patients.map((patient) => fetchPatientCharts(patient.id)),
-        ).then((groups) => groups.flat())
-      : Promise.resolve([]),
+    permissions.canViewCharting ? fetchAllCharts() : Promise.resolve([]),
     permissions.canViewPrescriptions
       ? fetchAllPatientPrescriptions(patients)
       : Promise.resolve([]),

@@ -28,6 +28,13 @@ async def list_prescriptions(
     return result.scalars().all()
 
 
+async def list_all_prescriptions(db: AsyncSession) -> Sequence[Prescription]:
+    result = await db.execute(
+        select(Prescription).order_by(Prescription.created_dt.desc())
+    )
+    return result.scalars().all()
+
+
 async def create_prescription(
     db: AsyncSession,
     patient_id: str,

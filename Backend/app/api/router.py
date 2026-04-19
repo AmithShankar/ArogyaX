@@ -40,6 +40,16 @@ api_router.include_router(
     tags=["Billing Dashboard"],
 )
 api_router.include_router(
+    charts.global_router,
+    prefix="/charts",
+    tags=["Charts Dashboard"],
+)
+api_router.include_router(
+    prescriptions.global_router,
+    prefix="/prescriptions",
+    tags=["Prescriptions Dashboard"],
+)
+api_router.include_router(
     summary.router,
     prefix="/patients/{patient_id}/summary",
     tags=["Summary"],

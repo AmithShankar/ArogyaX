@@ -15,6 +15,7 @@ from app.schemas.prescription import (
 )
 
 router = APIRouter()
+global_router = APIRouter()
 
 
 def _enrich_rx(rx, user_map: dict) -> dict:
@@ -32,6 +33,19 @@ def _enrich_rx(rx, user_map: dict) -> dict:
     if rx.prescribed_by_id in user_map:
         data["prescribedBy"] = user_map[rx.prescribed_by_id].name
     return data
+
+
+@global_router.get("", status_code=status.HTTP_200_OK)
+async def list_all_prescriptions_global(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_permission("canViewPrescriptions")),
+):
+    prescriptions = await crud_prescription.list_all_prescriptions(db)
+    user_map = await fetch_users_by_ids(
+        db, {rx.prescribed_by_id for rx in prescriptions}
+    )
+    data = [_enrich_rx(rx, user_map) for rx in prescriptions]
+    return ok(censor_patient_data(current_user, data))
 
 
 @router.get("", status_code=status.HTTP_200_OK)

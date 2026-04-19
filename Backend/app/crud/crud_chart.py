@@ -24,6 +24,13 @@ async def list_chart_entries(
     return result.scalars().all()
 
 
+async def list_all_chart_entries(db: AsyncSession) -> Sequence[ChartEntry]:
+    result = await db.execute(
+        select(ChartEntry).order_by(ChartEntry.created_dt.desc())
+    )
+    return result.scalars().all()
+
+
 async def create_chart_entry(
     db: AsyncSession,
     patient_id: str,

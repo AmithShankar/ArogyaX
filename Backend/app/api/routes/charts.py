@@ -14,6 +14,7 @@ from app.schemas.common import ok
 from app.services import file_service
 
 router = APIRouter()
+global_router = APIRouter()
 
 
 def _enrich_entry(entry, user_map: dict) -> dict:
@@ -32,6 +33,17 @@ def _enrich_entry(entry, user_map: dict) -> dict:
         data["userName"] = u.name
         data["userRole"] = u.role.value
     return data
+
+
+@global_router.get("", status_code=status.HTTP_200_OK)
+async def list_all_charts(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_permission("canViewCharting")),
+):
+    entries = await crud_chart.list_all_chart_entries(db)
+    user_map = await fetch_users_by_ids(db, {e.user_id for e in entries})
+    data = [_enrich_entry(e, user_map) for e in entries]
+    return ok(censor_clinical_data(current_user, data))
 
 
 @router.get("", status_code=status.HTTP_200_OK)
