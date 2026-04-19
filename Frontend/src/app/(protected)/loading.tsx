@@ -1,37 +1,33 @@
 import { HeartPulse } from "lucide-react";
 
-export default function GlobalProtectedLoading() {
+export default function ProtectedLoading() {
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background/80 backdrop-blur-xl">
-      <div className="relative">
-        <div className="absolute inset-0 -m-8 animate-[ping_3s_linear_infinite] rounded-full border-2 border-primary/20" />
-        <div className="absolute inset-0 -m-4 animate-[ping_2s_linear_infinite] rounded-full border-2 border-primary/30" />
-        
-        <div className="relative flex h-24 w-24 items-center justify-center rounded-3xl bg-primary text-primary-foreground shadow-[0_0_50px_-12px_rgba(var(--primary),0.5)]">
-          <HeartPulse className="h-12 w-12 animate-pulse" />
+    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background px-6">
+      <div className="relative mb-12 flex h-24 w-24 items-center justify-center">
+        <div className="absolute inset-0 animate-ping rounded-full bg-primary/20" />
+        <div className="absolute inset-0 -m-4 animate-ping rounded-full bg-primary/10 duration-1000" />
+        <div className="relative flex h-20 w-20 items-center justify-center rounded-3xl bg-primary text-primary-foreground shadow-[0_0_50px_-12px_rgba(var(--primary),0.5)]">
+          <HeartPulse className="h-10 w-10 animate-pulse" />
         </div>
       </div>
-
-      <div className="mt-12 flex flex-col items-center gap-3">
-        <h2 className="text-xl font-bold tracking-tight text-foreground">
-          Initializing Clinical Command Center
+      
+      <div className="space-y-4 text-center max-w-sm animate-in fade-in zoom-in duration-500">
+        <h2 className="text-3xl font-black tracking-tight text-foreground">
+          Initializing Session
         </h2>
-        <div className="flex items-center gap-1.5 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
-          <span className="flex h-1 w-1 rounded-full bg-primary/40" />
-          Synchronizing Secure Data
-          <span className="flex items-center gap-0.5 ml-1">
-            <span className="h-1 w-1 animate-[bounce_1s_infinite_100ms] rounded-full bg-primary" />
-            <span className="h-1 w-1 animate-[bounce_1s_infinite_200ms] rounded-full bg-primary" />
-            <span className="h-1 w-1 animate-[bounce_1s_infinite_300ms] rounded-full bg-primary" />
-          </span>
+        <div className="flex flex-col items-center gap-2">
+           <div className="flex items-center gap-1.5 font-mono text-xs uppercase tracking-[0.3em] text-primary">
+              Establishing Secure Link
+              <span className="flex items-center gap-0.5 ml-1">
+                <span className="h-1 w-1 animate-bounce rounded-full bg-primary" />
+                <span className="h-1 w-1 animate-bounce rounded-full bg-primary [animation-delay:0.2s]" />
+                <span className="h-1 w-1 animate-bounce rounded-full bg-primary [animation-delay:0.4s]" />
+              </span>
+           </div>
+           <p className="text-sm text-muted-foreground font-medium">
+             Synchronizing clinical secure storage...
+           </p>
         </div>
-      </div>
-
-      <div className="absolute bottom-12 flex items-center gap-2 rounded-full border border-border/50 bg-secondary/50 px-4 py-1.5 transition-all hover:bg-secondary/80">
-        <div className="h-2 w-2 animate-pulse rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-          End-to-End Encrypted Session
-        </span>
       </div>
     </div>
   );
