@@ -1,51 +1,45 @@
-# ArogyaX Backend
+# ArogyaX - Backend
 
-FastAPI application handling hospital data, authentication, and security logging.
+High-performance clinical API built with FastAPI and PostgreSQL.
 
-## Tech Stack
+### 🏗️ Architecture
+- **Framework**: FastAPI (Async)
+- **Database**: PostgreSQL
+- **ORM**: SQLAlchemy + Alembic
+- **Security**: JWT Authentication + Password Hashing (BCrypt)
+- **Validation**: Pydantic V2
 
-- **Framework**: FastAPI
-- **Database**: PostgreSQL with SQLAlchemy 2.0 (async)
-- **Migrations**: Alembic
-- **Validation**: Pydantic v2
-- **Auth**: JWT (cookies)
+### 📥 Setup & Launch
 
-## Key Features
+1.  **Environment Setup**:
+    ```bash
+    # Create virtual environment
+    python -m venv venv
 
-- **RBAC**: A permissions matrix controls access for 8 roles (Doctor, Nurse, Admin, etc.).
-- **Audit Logging**: Middleware records all data changes (User, Action, Resource) automatically.
-- **Async DB**: Full async implementation for database sessions.
-- **Redaction**: Sensitive patient data is hidden from staff roles without sufficient clearance.
+    # Activate
+    .\venv\Scripts\activate
 
-## Quick Start
+    # Install dependencies
+    pip install -r requirements.txt
+    ```
 
-```bash
-uvicorn app.main:app --reload
-```
+2.  **Database Configuration**:
+    Configure your `.env` by referring to [`.env.example`](.env.example).
 
-API documentation: `http://localhost:8000/docs`
+3.  **Seed Admin User**:
+    ```bash
+    python seed_admin.py
+    ```
 
-## Full Setup
+4.  **Launch API**:
+    ```bash
+    python -m uvicorn app.main:app --reload
+    ```
 
-### 1. Environment & Dependencies
-```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-```
+### 🔒 Enterprise Standards
+- **Middleware**: CORSMiddleware configured for strict local domains.
+- **Audit Logs**: Automatic logging of data mutations (create, update, delete).
+- **Scalability**: Async-first request handling for high-throughput environments.
 
-### 2. Configuration
-```bash
-cp .env.example .env
-```
-
-### 3. Database & Admin
-```bash
-alembic upgrade head
-python seed_admin.py        # Create initial admin account
-```
-
-## Deployment
-
-**Build Command**: `pip install -r requirements.txt`
-**Start Command**: `alembic upgrade head && python seed_admin.py && gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app`
+---
+[Return to Root README](../README.md)

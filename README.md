@@ -1,77 +1,39 @@
 # ArogyaX
 
-A hospital management system for patient records, clinical charts, billing, and staff.
-
-## Project Structure
-
-- **Frontend**: Next.js 16 app with role-specific dashboards.
-- **Backend**: FastAPI with PostgreSQL and JWT authentication.
-- **Security**: Role-based access control and audit logging for all changes.
+A unified hospital operating system for clinical workflows, patient records, and hospital administration.
 
 ---
 
-## Documentation
+### ✨ Features
+- **Dashboard**: Operational overview of patients and bills.
+- **Patients**: Comprehensive profiles with medical history and charting.
+- **Prescriptions**: Digital medication records.
+- **Billing**: Invoice generation and payment tracking.
+- **Audit Logging**: System-wide event tracking for all changes.
 
-- [Frontend Details](./Frontend/README.md)
-- [Backend Details](./Backend/README.md)
+### 🏗️ Project Structure
+| Module | Technology | Path |
+| :--- | :--- | :--- |
+| **Frontend** | Next.js, pnpm, Tailwind | [`./Frontend`](./Frontend/README.md) |
+| **Backend** | FastAPI, Python, SQLAlchemy | [`./Backend`](./Backend/README.md) |
+| **Database** | PostgreSQL | Managed via SQLAlchemy |
 
----
+### 🛠️ Local Development
 
-## Features
-
-- **8 Staff Roles**: Views for doctors, nurses, receptionists, pharmacists, lab techs, and admins.
-- **Patient Files**: Clinical history, vitals, and digital prescriptions.
-- **Lab Results**: File uploads and previews for reports.
-- **Invoicing**: Payment tracking and revenue overviews.
-- **Audit Log**: Records of all changes with user attribution.
-- **AI Summary**: Patient status summaries via LLM.
-
----
-
-## Project Structure
-
-```
-ArogyaX/
-├── Frontend/               # Next.js App Router application
-│   ├── src/app/            # Route segments
-│   ├── src/components/     # UI components
-│   ├── src/features/       # Feature logic
-│   └── src/lib/            # API client and utilities
-├── Backend/                # FastAPI application
-│   ├── app/api/routes/     # Route handlers
-│   ├── app/core/           # Auth, RBAC, and config
-│   ├── app/crud/           # Database access
-│   ├── app/models/         # SQLAlchemy models
-│   ├── app/schemas/        # Pydantic schemas
-│   └── app/middleware/     # Audit logging
-└── README.md
-```
-
-## Quick Start (Local Development)
-
-**Backend**
+#### 1. Backend Setup
 ```bash
 cd Backend
-uvicorn app.main:app --reload
+python -m venv venv
+.\venv\Scripts\activate
+
+pip install -r requirements.txt
+python seed_admin.py
+python -m uvicorn app.main:app --reload
 ```
 
-**Frontend**
+#### 2. Frontend Setup
 ```bash
 cd Frontend
+pnpm install
 pnpm dev
 ```
-
----
-
-## Full Setup
-
-### Backend
-1. **Environment**: `cd Backend && python -m venv .venv && .venv\Scripts\activate`
-2. **Install**: `pip install -r requirements.txt`
-3. **Config**: `cp .env.example .env`
-4. **Init**: `alembic upgrade head && python seed_admin.py`
-
-### Frontend
-1. **Install**: `cd Frontend && pnpm install`
-2. **Config**: `cp .env.example .env`
-3. **Start**: `pnpm dev`
