@@ -6,6 +6,7 @@ export interface ChartEntry {
   userId: string;
   userName: string;
   userRole: UserRole;
+  patientName?: string;
   comments: string;
   type: "visit" | "vitals" | "lab" | "note";
   upload?: string;

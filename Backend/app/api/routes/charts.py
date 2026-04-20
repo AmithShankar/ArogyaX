@@ -5,7 +5,7 @@ from app.core.censorship import censor_clinical_data
 from app.api.dependencies import get_db
 from app.core.permissions import require_permission
 from app.core.rate_limit import UPLOAD_LIMIT, rate_limit_dependency
-from app.core.utils import fetch_users_by_ids
+from app.core.utils import fetch_users_by_ids, fetch_patients_by_ids
 from app.crud import crud_chart, crud_patient
 from app.models.user import User
 from app.models.chart_entry import ChartType
@@ -17,8 +17,8 @@ router = APIRouter()
 global_router = APIRouter()
 
 
-def _enrich_entry(entry, user_map: dict) -> dict:
-    """Attach userName and userRole from user_map to a chart entry dict."""
+def _enrich_entry(entry, user_map: dict, patient_map: dict = None) -> dict:
+    """Attach userName and userRole from user_map and patientName from patient_map to a chart entry dict."""
     data = ChartEntryResponse(
         id=entry.id,
         patient_id=entry.patient_id,
@@ -32,6 +32,8 @@ def _enrich_entry(entry, user_map: dict) -> dict:
         u = user_map[entry.user_id]
         data["userName"] = u.name
         data["userRole"] = u.role.value
+    if patient_map and entry.patient_id in patient_map:
+        data["patientName"] = patient_map[entry.patient_id].name
     return data
 
 
@@ -42,7 +44,8 @@ async def list_all_charts(
 ):
     entries = await crud_chart.list_all_chart_entries(db)
     user_map = await fetch_users_by_ids(db, {e.user_id for e in entries})
-    data = [_enrich_entry(e, user_map) for e in entries]
+    patient_map = await fetch_patients_by_ids(db, {e.patient_id for e in entries})
+    data = [_enrich_entry(e, user_map, patient_map) for e in entries]
     return ok(censor_clinical_data(current_user, data))
 
 

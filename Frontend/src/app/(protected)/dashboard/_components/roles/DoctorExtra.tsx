@@ -49,7 +49,7 @@ export function DoctorExtra({ recentCharts, patients }: DoctorExtraProps) {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
                       <span className="truncate text-sm font-medium text-foreground">
-                        {patient?.name ?? entry.patientId}
+                        {entry.patientName ?? "Unknown Patient"}
                       </span>
                       <span className="shrink-0 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
                         {timeAgo(entry.createdDt)}

@@ -5,8 +5,8 @@ A unified hospital operating system for clinical workflows, patient records, and
 ---
 
 ### 🌐 Live Demo
-[![Frontend](https://img.shields.io/badge/Frontend-Live_Demo-blue?style=for-the-badge&logo=nextdotjs)](https://arogyax.amithshankar.in)
-[![Backend](https://img.shields.io/badge/Backend-API_Docs-green?style=for-the-badge&logo=fastapi)](https://arogyax-api.amithshankar.in/docs)
+<a href="https://arogyax.amithshankar.in" target="_blank"><img src="https://img.shields.io/badge/Frontend-Live_Demo-blue?style=for-the-badge&logo=nextdotjs" alt="Frontend Live Demo"></a>
+<a href="https://arogyax-api.amithshankar.in/docs" target="_blank"><img src="https://img.shields.io/badge/Backend-API_Docs-green?style=for-the-badge&logo=fastapi" alt="Backend API Docs"></a>
 
 ---
 

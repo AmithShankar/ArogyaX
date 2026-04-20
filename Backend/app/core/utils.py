@@ -30,3 +30,16 @@ async def fetch_users_by_ids(db: "AsyncSession", ids: set[str]) -> dict[str, Use
 
     result = await db.execute(select(UserModel).where(UserModel.id.in_(ids)))
     return {u.id: u for u in result.scalars()}
+
+
+async def fetch_patients_by_ids(db: "AsyncSession", ids: set[str]):
+    """
+    Bulk-fetch patients by a set of IDs and return a mapping of id → Patient.
+    """
+    if not ids:
+        return {}
+    from sqlalchemy import select
+    from app.models.patient import Patient as PatientModel
+
+    result = await db.execute(select(PatientModel).where(PatientModel.id.in_(ids)))
+    return {p.id: p for p in result.scalars()}

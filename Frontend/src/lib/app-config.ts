@@ -13,7 +13,7 @@ function trimTrailingSlash(value: string) {
 }
 
 export function getServerApiBaseUrl() {
-  // NEXT_PUBLIC_API_URL should point to the real backend URL (e.g., arogyax-api.amithshankar.in)
+  // NEXT_PUBLIC_API_URL should point to the real backend URL
   // for server-to-server communication.
   const envUrl = process.env.NEXT_PUBLIC_API_URL;
   if (envUrl) return trimTrailingSlash(envUrl);
