@@ -190,7 +190,7 @@ export function AuditLogClient({ initialData }: AuditLogClientProps) {
   }, [page, totalPages]);
 
   return (
-    <div className="page-shell-xl animate-fade-in">
+    <div className="page-shell animate-fade-in">
       <section className="page-hero">
         <div className="space-y-4">
           <Badge variant="outline" className="w-fit">
