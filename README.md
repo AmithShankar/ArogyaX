@@ -4,6 +4,12 @@ A unified hospital operating system for clinical workflows, patient records, and
 
 ---
 
+### 🌐 Live Demo
+[![Frontend](https://img.shields.io/badge/Frontend-Live_Demo-blue?style=for-the-badge&logo=nextdotjs)](https://arogyax.amithshankar.in)
+[![Backend](https://img.shields.io/badge/Backend-API_Docs-green?style=for-the-badge&logo=fastapi)](https://arogyax-api.amithshankar.in/docs)
+
+---
+
 ### ✨ Features
 - **Dashboard**: Operational overview of patients and bills.
 - **Patients**: Comprehensive profiles with medical history and charting.
