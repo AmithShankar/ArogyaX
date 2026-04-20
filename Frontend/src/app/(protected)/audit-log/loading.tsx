@@ -1,0 +1,42 @@
+"use client";
+
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function AuditLogLoading() {
+  return (
+    <div className="page-shell animate-in fade-in duration-500">
+      <section className="page-hero">
+        <div className="space-y-4">
+          <Skeleton className="h-6 w-[140px] rounded-full opacity-20" />
+          <div className="space-y-2">
+            <Skeleton className="h-10 w-[240px]" />
+            <Skeleton className="h-4 w-[400px] max-w-full" />
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <Skeleton className="h-10 w-full max-w-md rounded-xl" />
+        <Skeleton className="h-10 w-[160px] rounded-xl" />
+      </section>
+
+      <div className="mt-6 overflow-hidden rounded-2xl border bg-card/50">
+        <div className="h-12 border-b bg-muted/30 px-8 flex items-center gap-4">
+           {[...Array(4)].map((_, i) => (
+             <Skeleton key={i} className="h-4 flex-1" />
+           ))}
+        </div>
+        <div className="divide-y">
+          {[...Array(10)].map((_, i) => (
+            <div key={i} className="h-14 px-8 flex items-center gap-4">
+               <Skeleton className="h-3 w-32" />
+               <Skeleton className="h-4 w-40" />
+               <Skeleton className="h-4 flex-1" />
+               <Skeleton className="h-3 w-20 opacity-60" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
