@@ -19,10 +19,12 @@ export interface AuthState {
   isLoggingOut: boolean;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isInitialLogin: boolean;
   
   // Actions
+  setInitialLogin: (value: boolean) => void;
   setUser: (user: User | null) => void;
-  hydrate: () => Promise<void>;
+  hydrate: (force?: boolean) => Promise<void>;
   login: (phone: string, password: string) => Promise<{
     success: boolean;
     needsPasswordChange: boolean;

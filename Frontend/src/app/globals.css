@@ -343,3 +343,14 @@
     transform: scale(1);
   }
 }
+
+/* Global UI Lockdown for Loading state */
+body[data-loading="true"] [data-sidebar],
+body[data-loading="true"] header,
+body[data-loading="true"] nav,
+body[data-loading="true"] .page-shell {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.2s ease;
+}

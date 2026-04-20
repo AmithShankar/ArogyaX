@@ -2,8 +2,10 @@
 
 import { useAuthStore } from "@/store/authStore";
 import { AuthContextType } from "@/types";
+import { HeartPulse } from "lucide-react";
 import { usePathname } from "next/navigation";
-import React, { createContext, useContext, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -13,12 +15,16 @@ export const useAuth = () => {
   return ctx;
 };
 
-import { HeartPulse } from "lucide-react";
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const { 
     user, 
     permissions, 
@@ -28,6 +34,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     isAuthenticated,
     isLoggingOut,
     isLoading,
+    isInitialLogin,
+    setInitialLogin,
     hydrate 
   } = useAuthStore();
 
@@ -38,11 +46,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [pathname, hydrate]);
 
+  // Handle global UI lockdown ONLY for initial login
+  useEffect(() => {
+    if (mounted) {
+      if (isInitialLogin || isLoggingOut) {
+        document.body.setAttribute("data-loading", "true");
+      } else {
+        document.body.removeAttribute("data-loading");
+      }
+    }
+    return () => {
+      document.body.removeAttribute("data-loading");
+    };
+  }, [isInitialLogin, isLoggingOut, mounted]);
+
+  // Clear initial login flag once we've successfully reached a protected page
+  useEffect(() => {
+    const isAuthRoute = pathname === "/login" || pathname === "/change-password";
+    if (mounted && !isAuthRoute && isInitialLogin && !isLoading) {
+      // Small delay to ensure smooth transition
+      const timer = setTimeout(() => {
+        setInitialLogin(false);
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [pathname, isInitialLogin, isLoading, mounted, setInitialLogin]);
+
   const isAuthRoute = pathname === "/login" || pathname === "/change-password";
 
-  if (isLoggingOut) {
-    return (
-      <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background p-6">
+  if (isLoggingOut && mounted) {
+    return createPortal(
+      <div className="fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-background p-6">
         <div className="relative mb-8 flex h-16 w-16 items-center justify-center">
           <div className="absolute inset-0 animate-ping rounded-full bg-primary/20" />
           <div className="relative h-12 w-12 rounded-2xl border-2 border-primary border-t-transparent animate-spin" />
@@ -58,14 +92,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         <div className="absolute bottom-12 text-[10px] font-black uppercase tracking-[0.3em] text-primary/40">
            ArogyaX · Healthcare Operations
          </div>
-      </div>
+      </div>,
+      document.body
     );
   }
 
-  // Session Initialization Screen (Blocking Header/Sidebar)
-  if (isLoading && !isAuthRoute) {
-    return (
-      <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background px-6">
+  // Session Initialization Screen (Blocking Header/Sidebar) - ONLY ON INITIAL LOGIN
+  if (isInitialLogin && !isAuthRoute && mounted) {
+    return createPortal(
+      <div className="fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-background px-6">
         <div className="relative mb-12 flex h-24 w-24 items-center justify-center">
           <div className="absolute inset-0 animate-ping rounded-full bg-primary/20" />
           <div className="absolute inset-0 -m-4 animate-ping rounded-full bg-primary/10 duration-1000" />
@@ -95,7 +130,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         <div className="absolute bottom-12 text-[10px] font-black uppercase tracking-[0.4em] text-foreground/20">
            Enterprise Clinical Solutions
         </div>
-      </div>
+      </div>,
+      document.body
     );
   }
 

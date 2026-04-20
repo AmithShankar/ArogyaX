@@ -16,6 +16,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoggingOut: false,
   isLoading: true,
   isAuthenticated: false,
+  isInitialLogin: false,
+
+  setInitialLogin: (value) => set({ isInitialLogin: value }),
 
   setUser: (user) => {
     set({ 
@@ -46,6 +49,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       await loginApi({ phone, password });
       const currentUser = await meApi();
       
+      set({ isInitialLogin: true });
       get().setUser(currentUser);
       Cookies.set(PASSWORD_TYPE_COOKIE, currentUser.passwordType, { expires: 7 });
 
