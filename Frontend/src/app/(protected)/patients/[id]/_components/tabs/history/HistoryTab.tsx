@@ -46,21 +46,6 @@ export function HistoryTab({
 
   return (
     <div className="space-y-8 pb-10">
-      {/* Visual Header - Unified Design */}
-      <div className="flex items-center justify-between gap-4 py-4 px-3 rounded-[2.5rem] border border-border/40 bg-card/30 backdrop-blur-md shadow-sm">
-        <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary border border-primary/20 shadow-inner">
-                <Activity className="h-6 w-6 animate-pulse" />
-            </div>
-            <div>
-                <h3 className="text-lg md:text-xl font-black tracking-tight text-foreground flex items-center gap-2">
-                    Clinical Stream
-                    <Sparkles className="h-4 w-4 text-primary animate-pulse" />
-                </h3>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">Pixel-Perfect Identity Sync</p>
-            </div>
-        </div>
-
         <div className="flex items-center gap-3">
             <Select value={chartFilter} onValueChange={setChartFilter}>
             <SelectTrigger className="h-10 w-full sm:w-44 border-border bg-background shadow-xs rounded-xl font-bold text-xs uppercase tracking-wider">
@@ -99,7 +84,6 @@ export function HistoryTab({
             </Dialog>
             )}
         </div>
-      </div>
 
       {/* Main Stream Flow */}
       <div className="relative space-y-12 px-2 lg:px-4">

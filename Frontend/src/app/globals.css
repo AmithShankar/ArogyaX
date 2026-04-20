@@ -146,7 +146,8 @@
     background-image:
       radial-gradient(circle at top left, hsl(var(--primary) / 0.025), transparent 20%),
       linear-gradient(180deg, hsl(210 18% 97%), hsl(var(--background)));
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
   }
 
   .dark body {
@@ -344,13 +345,5 @@
   }
 }
 
-/* Global UI Lockdown for Loading state */
-body[data-loading="true"] [data-sidebar],
-body[data-loading="true"] header,
-body[data-loading="true"] nav,
-body[data-loading="true"] .page-shell {
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  transition: opacity 0.2s ease;
-}
+
+/* End of file */

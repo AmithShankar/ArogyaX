@@ -10,10 +10,11 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select";
+import { DataTablePagination } from "@/components/shared/DataTablePagination";
 import { useAuth } from "@/contexts/AuthContext";
 import { LabEntry, LabsClientProps } from "@/types";
 import {
-    ColumnFiltersState, getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, useReactTable
+    ColumnFiltersState, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable
 } from "@tanstack/react-table";
 import { FlaskConical, Search, Upload, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -23,15 +24,17 @@ import { LabsDataTable } from "./LabsDataTable";
 
 
 
-export function LabsClient({ permissions, initialLabs }: LabsClientProps) {
-  const { user } = useAuth();
-  const [mounted, setMounted] = useState(false);
-  const [labs] = useState<LabEntry[]>(initialLabs);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+import { TablePageSkeleton } from "@/components/shared/skeletons/TablePageSkeleton";
 
+export function LabsClient({ permissions, initialLabs }: LabsClientProps) {
+  const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const { user } = useAuth();
+  const [labs] = useState<LabEntry[]>(initialLabs);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -55,9 +58,21 @@ export function LabsClient({ permissions, initialLabs }: LabsClientProps) {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 10,
+      },
+    },
   });
 
-  if (!mounted) return null;
+  if (!mounted) {
+    return (
+      <div className="page-shell">
+        <TablePageSkeleton columns={5} rows={12} />
+      </div>
+    );
+  }
 
   return (
     <div className="page-shell animate-fade-in">

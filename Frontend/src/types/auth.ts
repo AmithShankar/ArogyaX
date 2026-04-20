@@ -9,8 +9,10 @@ export interface AuthContextType {
     error?: string;
   }>;
   logout: () => Promise<void>;
-  changePassword: (newPassword: string) => Promise<void>;
+  changePassword: (newPassword: string, router: any) => Promise<void>;
   isAuthenticated: boolean;
+  isInitialLogin: boolean;
+  setInitialLogin: (value: boolean) => void;
 }
 
 export interface AuthState {

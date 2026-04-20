@@ -3,6 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DataTablePagination } from "@/components/shared/DataTablePagination";
 import {
     Table,
     TableBody,
@@ -103,6 +104,9 @@ export function BillingDataTable({
               )}
             </TableBody>
           </Table>
+          <div className="border-t border-border/40 bg-muted/5">
+            <DataTablePagination table={table} />
+          </div>
         </CardContent>
       </Card>
     </section>

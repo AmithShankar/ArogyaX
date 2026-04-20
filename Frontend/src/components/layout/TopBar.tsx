@@ -35,7 +35,47 @@ export function TopBar() {
   const { resolvedTheme, setTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
-  if (!user) return null;
+  // If user is not loaded yet, render a high-fidelity skeleton to anchor the layout
+  if (!user) {
+    return (
+      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-sidebar-border/50">
+        <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-transparent pointer-events-none" />
+        
+        <div className="page-shell py-0">
+          <div className="flex h-[4.5rem] items-center gap-3">
+             {/* Left Controls */}
+             <div className="flex items-center gap-3">
+                <div className="h-10 w-10 shrink-0 rounded-xl bg-muted/40 border border-border/70 animate-pulse" />
+                <div className="h-6 w-px bg-border/60" />
+             </div>
+
+             {/* Title Section - Perfectly Aligned */}
+             <div className="flex-1 min-w-0">
+               <div className="space-y-2 animate-pulse">
+                 <div className="h-2 w-24 bg-primary/10 rounded" />
+                 <div className="h-4 w-48 bg-muted/40 rounded" />
+               </div>
+             </div>
+
+             {/* Right Actions */}
+             <div className="flex items-center gap-2 shrink-0 animate-pulse">
+                <div className="hidden lg:block h-10 w-32 rounded-xl bg-muted/10 border border-border/70" />
+                <div className="h-10 w-10 rounded-xl bg-muted/20" />
+                <div className="h-10 w-10 rounded-xl bg-muted/20" />
+                <div className="flex items-center gap-3 h-10 pl-2 pr-3.5 rounded-xl border border-border/70 bg-card/40">
+                   <div className="h-7 w-7 rounded-full bg-muted/30" />
+                   <div className="hidden sm:block space-y-1">
+                      <div className="h-3 w-16 bg-muted/30 rounded" />
+                      <div className="h-2 w-10 bg-muted/10 rounded" />
+                   </div>
+                </div>
+             </div>
+          </div>
+        </div>
+        <div className="absolute inset-x-0 bottom-0 h-px bg-border/50" />
+      </header>
+    );
+  }
 
   const pageMeta = getPageMeta(pathname);
 

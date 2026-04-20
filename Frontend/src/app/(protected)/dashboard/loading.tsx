@@ -1,26 +1,28 @@
-"use client";
-
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DashboardLoading() {
   return (
-    <div className="page-shell animate-in fade-in duration-700">
+    <div className="page-shell animate-in fade-in duration-300">
       <section className="page-hero">
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
-          <div className="relative h-[280px] w-full rounded-2xl bg-card border overflow-hidden">
-             <div className="p-6 space-y-4">
-                <Skeleton className="h-4 w-[120px] opacity-20" />
-                <Skeleton className="h-10 w-[300px]" />
-                <div className="flex gap-2">
-                   <Skeleton className="h-6 w-[100px] rounded-full" />
-                   <Skeleton className="h-6 w-[100px] rounded-full" />
-                </div>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
-                   {[...Array(4)].map((_, i) => (
-                     <Skeleton key={i} className="h-20 w-full rounded-xl" />
-                   ))}
-                </div>
-             </div>
+          <div className="min-w-0">
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[140px] rounded-full opacity-30" />
+              <Skeleton className="h-10 w-[380px] rounded-xl" />
+              <Skeleton className="h-4 w-[480px] rounded-lg opacity-40 max-w-full" />
+            </div>
+            
+            <div className="mt-6 flex flex-wrap gap-2.5">
+              {[...Array(3)].map((_, i) => (
+                <Skeleton key={i} className="h-7 w-[130px] rounded-full opacity-20" />
+              ))}
+            </div>
+
+            <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-[108px] w-full rounded-2xl border border-border/40 bg-muted/10 animate-pulse" />
+              ))}
+            </div>
           </div>
 
           <div className="flex flex-col gap-3">
@@ -37,7 +39,7 @@ export default function DashboardLoading() {
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[...Array(3)].map((_, i) => (
-            <Skeleton key={i} className="h-[300px] w-full rounded-2xl" />
+            <Skeleton key={i} className="h-[300px] w-full rounded-2xl shadow-sm border border-border/40" />
           ))}
         </div>
       </div>

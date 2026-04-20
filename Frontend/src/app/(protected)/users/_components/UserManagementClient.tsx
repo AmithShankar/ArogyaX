@@ -8,7 +8,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 
 import {
-    ColumnFiltersState, getCoreRowModel, getFilteredRowModel, getSortedRowModel,
+    ColumnFiltersState, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel,
     SortingState, useReactTable
 } from "@tanstack/react-table";
 
@@ -32,16 +32,18 @@ import { getUserColumns } from "./table/UserColumns";
 import { UserDataTable } from "./table/UserDataTable";
 
 
+import { TablePageSkeleton } from "@/components/shared/skeletons/TablePageSkeleton";
+
 export function UserManagementClient({
   initialUsers,
 }: UserManagementClientProps) {
-  const { user } = useAuth();
   const [mounted, setMounted] = useState(false);
-  const [users, setUsers] = useState<User[]>(initialUsers);
-
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const { user } = useAuth();
+  const [users, setUsers] = useState<User[]>(initialUsers);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [generatedPassword, setGeneratedPassword] = useState("");
@@ -190,9 +192,21 @@ export function UserManagementClient({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 10,
+      },
+    },
   });
   
-  if (!mounted) return null;
+  if (!mounted) {
+    return (
+      <div className="page-shell">
+        <TablePageSkeleton columns={5} rows={12} />
+      </div>
+    );
+  }
 
   return (
     <div className="page-shell animate-fade-in">

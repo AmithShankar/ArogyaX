@@ -11,6 +11,7 @@ import {
     TableHeader,
     TableRow
 } from "@/components/ui/table";
+import { DataTablePagination } from "@/components/shared/DataTablePagination";
 import { cn } from "@/lib/utils";
 import { PatientDataTableProps } from "@/types";
 import { flexRender } from "@tanstack/react-table";
@@ -146,6 +147,9 @@ export function PatientDataTable({ table }: PatientDataTableProps) {
                 )}
               </TableBody>
             </Table>
+            <div className="border-t border-border/40 bg-muted/5">
+              <DataTablePagination table={table} />
+            </div>
           </CardContent>
         </Card>
       </section>

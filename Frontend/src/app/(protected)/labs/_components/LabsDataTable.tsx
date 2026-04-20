@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { DataTablePagination } from "@/components/shared/DataTablePagination";
 import {
     Table,
     TableBody,
@@ -139,6 +140,9 @@ export function LabsDataTable({ table, onPreview }: LabsDataTableProps) {
                 )}
               </TableBody>
             </Table>
+            <div className="border-t bg-muted/5 p-4">
+              <DataTablePagination table={table} />
+            </div>
           </CardContent>
         </Card>
       </section>

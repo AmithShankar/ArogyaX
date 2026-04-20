@@ -24,30 +24,55 @@ export default function PatientProfileLoading() {
         </div>
       </section>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[...Array(4)].map((_, i) => (
-          <Skeleton key={i} className="h-24 w-full rounded-2xl" />
-        ))}
-      </div>
-
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_360px]">
+        {/* Summary + Tabs Area */}
         <div className="space-y-6">
-          <div className="flex gap-4 border-b pb-px">
-            {[...Array(4)].map((_, i) => (
-              <Skeleton key={i} className="h-10 w-24" />
-            ))}
+          {/* Summary Skeleton */}
+          <div className="rounded-2xl border border-border/50 bg-card/30 p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-6 w-32" />
+              <Skeleton className="h-8 w-8 rounded-full" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-full opacity-60" />
+              <Skeleton className="h-4 w-[90%] opacity-60" />
+              <Skeleton className="h-4 w-[70%] opacity-40" />
+            </div>
           </div>
 
-          <div className="space-y-4">
-            {[...Array(3)].map((_, i) => (
-              <Skeleton key={i} className="h-[180px] w-full rounded-2xl" />
-            ))}
+          {/* Tabs Skeleton */}
+          <div className="space-y-6">
+            <div className="flex gap-4 border-b pb-px">
+              {[...Array(4)].map((_, i) => (
+                <Skeleton key={i} className="h-10 w-24" />
+              ))}
+            </div>
+
+            <div className="space-y-4">
+              {[...Array(2)].map((_, i) => (
+                <Skeleton key={i} className="h-[200px] w-full rounded-2xl border border-border/40" />
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className="space-y-6">
-          <Skeleton className="h-[240px] w-full rounded-2xl" />
-          <Skeleton className="h-[400px] w-full rounded-2xl" />
+        {/* Sidebar Stats Area */}
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="flex h-24 items-center justify-between rounded-2xl border border-border/50 bg-card/10 p-5">
+              <div className="flex items-center gap-4">
+                <Skeleton className="h-12 w-12 rounded-2xl" />
+                <div className="space-y-2">
+                  <Skeleton className="h-3 w-16 opacity-40" />
+                  <Skeleton className="h-6 w-12" />
+                </div>
+              </div>
+              <Skeleton className="h-6 w-16 rounded-full opacity-20" />
+            </div>
+          ))}
+          <div className="rounded-2xl border border-dashed border-border/60 bg-muted/5 p-4">
+             <Skeleton className="h-3 w-32 opacity-30" />
+          </div>
         </div>
       </div>
     </div>

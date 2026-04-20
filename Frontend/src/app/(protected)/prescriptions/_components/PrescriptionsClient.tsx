@@ -15,7 +15,7 @@ import { createInvoiceApi, updatePrescriptionApi } from "@/services/apiClient";
 import { PrescriptionEntry, PrescriptionsClientProps } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-    ColumnFiltersState, getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, useReactTable
+    ColumnFiltersState, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable
 } from "@tanstack/react-table";
 import {
     ClipboardList, Receipt,
@@ -24,6 +24,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { TablePageSkeleton } from "@/components/shared/skeletons/TablePageSkeleton";
 
 // New modular imports
 import { BulkDispenseDialog } from "./dialogs/BulkDispenseDialog";
@@ -35,14 +36,13 @@ export function PrescriptionsClient({
   user,
   initialRx,
 }: PrescriptionsClientProps) {
-  const router = useRouter();
-  const queryClient = useQueryClient();
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [tab, setTab] = useState<string>(
     user?.role === "pharmacy" ? "active" : "all"
   );
@@ -174,15 +174,30 @@ export function PrescriptionsClient({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 10,
+      },
+    },
   });
 
   useEffect(() => {
-    table.getColumn("status")?.setFilterValue(tab);
-  }, [tab, table]);
+    if (mounted) {
+      table.getColumn("status")?.setFilterValue(tab);
+    }
+  }, [tab, table, mounted]);
+
+  if (!mounted) {
+    return (
+      <div className="page-shell">
+        <TablePageSkeleton columns={5} rows={12} />
+      </div>
+    );
+  }
 
   const filteredCount = table.getRowModel().rows.length;
 
-  if (!mounted) return null;
 
   return (
     <div className="page-shell animate-fade-in">

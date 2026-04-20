@@ -17,6 +17,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import {
     getCoreRowModel,
+    getPaginationRowModel,
     getSortedRowModel,
     SortingState,
     useReactTable
@@ -32,11 +33,17 @@ import { AuditLogExportDialog } from "./dialogs/AuditLogExportDialog";
 import { columns } from "./table/AuditLogColumns";
 import { AuditLogDataTable } from "./table/AuditLogDataTable";
 import { TriStateFilter } from "./table/TriStateFilter";
+import { TablePageSkeleton } from "@/components/shared/skeletons/TablePageSkeleton";
 
 
 
 
 export function AuditLogClient({ initialData }: AuditLogClientProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const { data: filterOptions } = useQuery({
     queryKey: ["audit-log-filters"],
     queryFn: getAuditLogFiltersApi,
@@ -161,16 +168,34 @@ export function AuditLogClient({ initialData }: AuditLogClientProps) {
     setPage(1);
   };
 
+  const memoColumns = useMemo(() => columns, []);
+
   const table = useReactTable({
     data: logs,
-    columns,
-    state: {
-      sorting,
-    },
-    onSortingChange: setSorting,
+    columns: memoColumns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     manualPagination: true,
+    rowCount: logResponse.total,
+    state: {
+      sorting,
+      pagination: {
+        pageIndex: page - 1,
+        pageSize: limit,
+      },
+    },
+    onSortingChange: setSorting,
+    onPaginationChange: (updater) => {
+      if (typeof updater === "function") {
+        const next = updater({
+          pageIndex: page - 1,
+          pageSize: limit,
+        });
+        setPage(next.pageIndex + 1);
+        setLimit(next.pageSize);
+      }
+    },
   });
 
   const pageNumbers = useMemo(() => {
@@ -188,6 +213,14 @@ export function AuditLogClient({ initialData }: AuditLogClientProps) {
     }
     return range;
   }, [page, totalPages]);
+
+  if (!mounted) {
+    return (
+      <div className="page-shell">
+        <TablePageSkeleton columns={5} rows={12} />
+      </div>
+    );
+  }
 
   return (
     <div className="page-shell animate-fade-in">

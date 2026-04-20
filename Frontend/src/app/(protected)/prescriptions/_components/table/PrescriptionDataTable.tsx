@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { DataTablePagination } from "@/components/shared/DataTablePagination";
 import {
     Table,
     TableBody,
@@ -146,6 +147,9 @@ export function PrescriptionDataTable({
                 )}
               </TableBody>
             </Table>
+            <div className="border-t border-border/40 bg-muted/5">
+              <DataTablePagination table={table} />
+            </div>
           </CardContent>
         </Card>
       </section>

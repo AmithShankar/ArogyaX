@@ -4,10 +4,11 @@ import {
     Search,
     UsersRound
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import * as React from "react";
 
 import {
-    ColumnFiltersState, getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, useReactTable
+    ColumnFiltersState, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable
 } from "@tanstack/react-table";
 import { patientColumns } from "./PatientColumns";
 
@@ -23,25 +24,27 @@ import {
 import { Patient, PatientListClientProps } from "@/types";
 import { PatientDataTable } from "./PatientDataTable";
 import { PatientRegisterDialog } from "./PatientRegisterDialog";
+import { TablePageSkeleton } from "@/components/shared/skeletons/TablePageSkeleton";
 
 export function PatientListClient({
   permissions,
   initialPatients,
 }: PatientListClientProps) {
   const [mounted, setMounted] = useState(false);
-  const [patients, setPatients] = useState<Patient[]>(initialPatients);
-
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  const [patients, setPatients] = useState<Patient[]>(initialPatients);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
 
+  const columns = React.useMemo(() => patientColumns, []);
+
   const table = useReactTable({
     data: patients,
-    columns: patientColumns,
+    columns,
     state: {
       sorting,
       columnFilters,
@@ -53,9 +56,22 @@ export function PatientListClient({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 10,
+      },
+    },
   });
 
-  if (!mounted) return null;
+  if (!mounted) {
+    return (
+      <div className="page-shell">
+        <TablePageSkeleton columns={5} rows={12} />
+      </div>
+    );
+  }
+
 
   return (
     <div className="page-shell animate-fade-in">

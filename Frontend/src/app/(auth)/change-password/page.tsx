@@ -36,8 +36,7 @@ export default function ChangePasswordPage() {
     setIsSubmitting(true);
 
     try {
-      await changePassword(newPass);
-      router.push("/dashboard");
+      await changePassword(newPass, router);
     } catch (submitError) {
       setError(
         submitError instanceof Error ? submitError.message : "Unable to change password",

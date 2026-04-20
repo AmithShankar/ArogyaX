@@ -4,6 +4,7 @@ import { CardTitle } from "@/components/ui/card";
 import { COLORS } from "@/data/styleData";
 import { cn } from "@/lib/utils";
 import { BarChart3, Info, LineChart as LineChartIcon, LucideIcon, PieChart as PieChartIcon, TrendingUp, Users } from "lucide-react";
+import { useEffect, useState } from "react";
 import {
     Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis,
     YAxis
@@ -33,6 +34,21 @@ export function AdminCharts({
   initialDiagnosisData,
   initialPatientFrequency,
 }: AdminChartsProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="h-[350px] w-full rounded-2xl bg-muted/10 animate-pulse" />
+        <div className="h-[350px] w-full rounded-2xl bg-muted/10 animate-pulse" />
+        <div className="h-[350px] w-full rounded-2xl bg-muted/10 animate-pulse" />
+        <div className="h-[350px] w-full rounded-2xl bg-muted/10 animate-pulse" />
+      </div>
+    );
+  }
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <div className={cn("premium-glass animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 p-6")}>

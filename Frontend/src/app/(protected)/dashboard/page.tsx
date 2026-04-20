@@ -21,7 +21,6 @@ import { ReceptionExtra } from "./_components/roles/ReceptionExtra";
 import { PatientSearch } from "./_components/search/PatientSearch";
 import { processDashboardData } from "./_utils/dashboard-data";
 import { getStatsConfig } from "./_utils/stats-config";
-import { InitialLoginClearer } from "@/components/auth/InitialLoginClearer";
 
 export const metadata: Metadata = {
   title: "Operations Dashboard | ArogyaX",
@@ -120,7 +119,6 @@ export default async function DashboardPage() {
       </section>
 
       {extraMap[user.role] ?? null}
-      <InitialLoginClearer />
     </div>
   );
 }

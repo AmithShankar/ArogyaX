@@ -44,6 +44,8 @@ import { getLabColumns } from "./tabs/labs/LabColumns";
 import { getRxColumns } from "./tabs/prescriptions/PrescriptionColumns";
 
 
+import { ConfirmationDialog } from "@/components/shared/ConfirmationDialog";
+
 export function PatientProfileClient({
   id,
   user,
@@ -54,6 +56,11 @@ export function PatientProfileClient({
   initialInvoices,
   initialSummary,
 }: PatientProfileClientProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "history");
@@ -90,6 +97,11 @@ export function PatientProfileClient({
   const [billingDialog, setBillingDialog] = useState(false);
   const [updatingInvoiceId, setUpdatingInvoiceId] = useState<string | null>(null);
 
+  // New states for confirmation dialogs
+  const [confirmChartDelete, setConfirmChartDelete] = useState<{ open: boolean; id: string | null }>({ open: false, id: null });
+  const [confirmRxDelete, setConfirmRxDelete] = useState<{ open: boolean; id: string | null }>({ open: false, id: null });
+  const [isProcessingAction, setIsProcessingAction] = useState(false);
+
 
   useEffect(() => {
     setCharts(initialCharts);
@@ -97,25 +109,41 @@ export function PatientProfileClient({
     setInvoices(initialInvoices);
   }, [initialCharts, initialPrescriptions, initialInvoices]);
 
-  const handleDeleteChartEntry = async (entryId: string) => {
-    if (!confirm("Are you sure you want to delete this clinical entry?")) return;
+  const handleDeleteChartEntry = (entryId: string) => {
+    setConfirmChartDelete({ open: true, id: entryId });
+  };
+
+  const executeDeleteChartEntry = async () => {
+    if (!confirmChartDelete.id) return;
+    setIsProcessingAction(true);
     try {
-      await deleteChartEntryApi(id, entryId);
-      setCharts((prev) => prev.filter((c) => c.id !== entryId));
+      await deleteChartEntryApi(id, confirmChartDelete.id);
+      setCharts((prev) => prev.filter((c) => c.id !== confirmChartDelete.id));
       toast.success("Entry removed");
+      setConfirmChartDelete({ open: false, id: null });
     } catch (error) {
       toast.error("Failed to delete entry");
+    } finally {
+      setIsProcessingAction(false);
     }
   };
 
-  const handleDeletePrescription = async (rxId: string) => {
-    if (!confirm("Are you sure you want to delete this prescription?")) return;
+  const handleDeletePrescription = (rxId: string) => {
+    setConfirmRxDelete({ open: true, id: rxId });
+  };
+
+  const executeDeletePrescription = async () => {
+    if (!confirmRxDelete.id) return;
+    setIsProcessingAction(true);
     try {
-      await deletePrescriptionApi(id, rxId);
-      setPrescriptions((prev) => prev.filter((r) => r.id !== rxId));
+      await deletePrescriptionApi(id, confirmRxDelete.id);
+      setPrescriptions((prev) => prev.filter((r) => r.id !== confirmRxDelete.id));
       toast.success("Prescription removed");
+      setConfirmRxDelete({ open: false, id: null });
     } catch (error) {
       toast.error("Failed to delete prescription");
+    } finally {
+      setIsProcessingAction(false);
     }
   };
 
@@ -239,6 +267,15 @@ export function PatientProfileClient({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
+
+  if (!mounted) {
+    return (
+      <div className="page-shell animate-pulse">
+        <div className="h-[200px] w-full rounded-2xl bg-muted/20" />
+        <div className="mt-8 h-[400px] w-full rounded-2xl bg-muted/10" />
+      </div>
+    );
+  }
 
   if (user?.role === "reception") {
     return (
@@ -426,6 +463,28 @@ export function PatientProfileClient({
           isDeleting={isDeleting}
         />
       )}
+
+      <ConfirmationDialog 
+        open={confirmChartDelete.open}
+        onOpenChange={(open) => setConfirmChartDelete({ ...confirmChartDelete, open })}
+        title="Delete Clinical Entry"
+        description="Are you sure you want to permanently delete this clinical record? This action cannot be undone and will be logged for audit purposes."
+        onConfirm={executeDeleteChartEntry}
+        confirmLabel="Delete Entry"
+        isLoading={isProcessingAction}
+        variant="danger"
+      />
+
+      <ConfirmationDialog 
+        open={confirmRxDelete.open}
+        onOpenChange={(open) => setConfirmRxDelete({ ...confirmRxDelete, open })}
+        title="Delete Prescription"
+        description="Are you sure you want to remove this medication from the patient's record? This trail will remain in clinical history but the order will be voided."
+        onConfirm={executeDeletePrescription}
+        confirmLabel="Void & Delete"
+        isLoading={isProcessingAction}
+        variant="danger"
+      />
     </div>
   );
 }

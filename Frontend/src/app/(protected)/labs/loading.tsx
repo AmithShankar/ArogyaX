@@ -1,6 +1,6 @@
 import { TablePageSkeleton } from "@/components/shared/skeletons/TablePageSkeleton";
 
-export default function BillingLoading() {
+export default function LabsLoading() {
   return (
     <TablePageSkeleton 
       heroTitle={true}

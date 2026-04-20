@@ -253,6 +253,16 @@ export default function LoginPage() {
             <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em] text-balance px-4 leading-relaxed">
               Unified Medical Interface
             </p>
+            <div className="pt-2">
+              <a 
+                href="https://amithshankar.in" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-[10px] font-bold text-primary/60 hover:text-primary transition-colors tracking-widest uppercase flex items-center justify-center gap-2 group-hover:gap-3 transition-all"
+              >
+                Built by amithshankar.in
+              </a>
+            </div>
           </div>
         </div>
       </div>

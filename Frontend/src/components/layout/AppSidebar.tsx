@@ -104,9 +104,53 @@ export function AppSidebar() {
   const collapsed = sidebar?.state === "collapsed";
   const isMobile = sidebar?.isMobile;
 
-  if (!user) return null;
+  const visibleItems = user ? navItems.filter((item) => item.roles.includes(user.role)) : [];
+  
+  // Define structural styles once
+  const sidebarStyles = "border-r border-sidebar-border/70 bg-sidebar-background/98";
 
-  const visibleItems = navItems.filter((item) => item.roles.includes(user.role));
+  // If user is not loaded yet, render a high-fidelity skeleton
+  if (!user) {
+    return (
+      <Sidebar collapsible="icon" className={sidebarStyles}>
+        <SidebarContent className="flex h-full flex-col !overflow-hidden">
+          {/* Header Skeleton */}
+          <div className="shrink-0 border-b border-sidebar-border/60 px-3 pb-3 pt-3">
+            <div className="flex items-center gap-3 px-1">
+              <div className="flex aspect-square size-10 shrink-0 items-center justify-center rounded-xl bg-sidebar-foreground/10 animate-pulse" />
+              <div className="min-w-0 space-y-1.5 animate-pulse">
+                <div className="h-2 w-20 bg-sidebar-foreground/10 rounded" />
+                <div className="h-4 w-28 bg-sidebar-foreground/15 rounded" />
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation Skeleton */}
+          <div className="flex-1 px-2 py-2 overflow-hidden">
+            <div className="px-2 mb-4 animate-pulse">
+              <div className="h-2 w-12 bg-sidebar-foreground/5 rounded" />
+            </div>
+            <div className="space-y-3 px-1 animate-pulse">
+               {[...Array(8)].map((_, i) => (
+                <div key={i} className="flex items-center gap-3 px-2 py-1">
+                  <div className="size-5 rounded-md bg-sidebar-foreground/10 shrink-0" />
+                  <div className="space-y-1.5 flex-1 p-1">
+                    <div className="h-3 w-2/3 bg-sidebar-foreground/10 rounded" />
+                    <div className="h-2 w-1/2 bg-sidebar-foreground/5 rounded" />
+                  </div>
+                </div>
+               ))}
+            </div>
+          </div>
+
+          {/* Footer Skeleton */}
+          <div className="mt-auto shrink-0 border-t border-sidebar-border/60 p-3">
+             <div className="h-10 w-full rounded-xl bg-sidebar-foreground/5 animate-pulse" />
+          </div>
+        </SidebarContent>
+      </Sidebar>
+    );
+  }
 
   const isActive = (url: string) => {
     if (url === "/dashboard") {
@@ -180,6 +224,7 @@ export function AppSidebar() {
                     >
                       <Link
                         href={item.url}
+                        prefetch={false}
                         onClick={closeMobileSidebar}
                         className={cn(
                           "flex w-full items-center transition-[gap] duration-200 ease-linear",
@@ -250,7 +295,20 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
-
+          
+          <div className={cn(
+            "flex flex-col items-center justify-center pt-2 transition-opacity duration-200",
+            collapsed ? "opacity-0 h-0" : "opacity-100"
+          )}>
+            <a 
+              href="https://amithshankar.in" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-[9px] font-bold text-sidebar-foreground/40 hover:text-sidebar-primary transition-colors tracking-[0.2em] uppercase"
+            >
+              amithshankar.in
+            </a>
+          </div>
         </div>
       </SidebarContent>
     </Sidebar>

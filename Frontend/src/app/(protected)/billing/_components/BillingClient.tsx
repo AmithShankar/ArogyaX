@@ -9,10 +9,11 @@ import { deleteInvoiceApi, listAllInvoicesApi } from "@/services/apiClient";
 import { InvoiceWithPatient } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import {
-    getCoreRowModel, getSortedRowModel,
+    getCoreRowModel, getPaginationRowModel, getSortedRowModel,
     SortingState, useReactTable
 } from "@tanstack/react-table";
 import { Filter, Receipt, Search, X } from "lucide-react";
+import { TablePageSkeleton } from "@/components/shared/skeletons/TablePageSkeleton";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { getBillingColumns } from "./table/BillingColumns";
@@ -24,13 +25,13 @@ import { getInvoiceHtml } from "./templates/InvoiceHtmlTemplate";
 
 
 export function BillingClient() {
-  const { permissions, user } = useAuth();
   const [mounted, setMounted] = useState(false);
-  const [search, setSearch] = useState("");
-
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const { permissions, user } = useAuth();
+  const [search, setSearch] = useState("");
 
   const [activeTab, setActiveTab] = useState("all");
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceWithPatient | null>(null);
@@ -110,9 +111,21 @@ export function BillingClient() {
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 10,
+      },
+    },
   });
   
-  if (!mounted) return null;
+  if (!mounted) {
+    return (
+      <div className="page-shell">
+        <TablePageSkeleton columns={5} rows={12} />
+      </div>
+    );
+  }
 
   return (
     <div className="page-shell animate-fade-in">

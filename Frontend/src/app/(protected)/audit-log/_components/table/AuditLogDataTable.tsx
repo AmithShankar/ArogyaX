@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { DataTablePagination } from "@/components/shared/DataTablePagination";
 import {
     Select,
     SelectContent,
@@ -140,119 +141,10 @@ export function AuditLogDataTable({
                 ) : null}
               </TableBody>
             </Table>
-            {!isLoading && logs.length === 0 && (
-              <div className="py-20 text-center">
-                <EmptyState
-                  icon={ScrollText}
-                  title="No audit events found"
-                  description="Try adjusting your filters or search terms."
-                  compact
-                  className="mx-auto max-w-sm"
-                />
-              </div>
-            )}
-            {isLoading && (
-              <div className="py-20 text-center animate-pulse text-muted-foreground flex flex-col items-center gap-2">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                <span className="text-xs font-medium uppercase tracking-wider">Synchronizing Audit Records...</span>
-              </div>
-            )}
+            <div className="border-t border-border/40 bg-muted/5">
+              <DataTablePagination table={table} />
+            </div>
           </CardContent>
-
-          {/* Pagination Toolbar */}
-          <div className="flex items-center justify-between border-t border-border/60 bg-muted/20 px-8 py-3">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span>Show items</span>
-                <Select 
-                  value={limit.toString()} 
-                  onValueChange={(val) => {
-                    setLimit(Number(val));
-                    setPage(1);
-                  }}
-                >
-                  <SelectTrigger className="h-8 w-[70px] bg-background">
-                    <SelectValue placeholder={limit} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="20">20</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                    <SelectItem value="100">100</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <p className="text-xs text-muted-foreground hidden lg:block border-l pl-4 border-border/60">
-                Total {totalEntries} entries found
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 w-8 p-0"
-                  onClick={() => setPage(1)}
-                  disabled={currentPage === 1 || isLoading}
-                  title="First page"
-                >
-                  <ChevronsLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 w-8 p-0"
-                  onClick={() => setPage((p: number) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1 || isLoading}
-                  title="Previous page"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-              </div>
-
-              <div className="flex items-center gap-1 mx-2">
-                {pageNumbers.map((n: number) => (
-                  <Button
-                    key={n}
-                    variant={currentPage === n ? "secondary" : "ghost"}
-                    size="sm"
-                    className={cn(
-                      "h-8 w-8 p-0 text-xs transition-all",
-                      currentPage === n && "bg-primary text-primary-foreground font-bold hover:bg-primary/90"
-                    )}
-                    onClick={() => setPage(n)}
-                    disabled={isLoading}
-                  >
-                    {n}
-                  </Button>
-                ))}
-              </div>
-
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 w-8 p-0"
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages || isLoading}
-                  title="Next page"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 w-8 p-0"
-                  onClick={() => setPage(totalPages)}
-                  disabled={currentPage === totalPages || isLoading}
-                  title="Last page"
-                >
-                  <ChevronsRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
         </Card>
       </section>
     </div>
