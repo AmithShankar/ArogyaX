@@ -24,42 +24,54 @@ export function PatientDataTable({ table }: PatientDataTableProps) {
   return (
     <>
       <section className="mobile-data-stack md:hidden">
-        {rows.map((row) => {
-          const patient = row.original;
-          return (
-            <Card
-              key={patient.id}
-              className="cursor-pointer border-border/80"
-              onClick={() => router.push(`/patients/${patient.id}`)}
-            >
-              <CardContent className="space-y-4 p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">
-                      {patient.name}
-                    </p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {patient.age} yrs | {patient.gender}
-                    </p>
+        {rows.length > 0 ? (
+          rows.map((row) => {
+            const patient = row.original;
+            return (
+              <Card
+                key={patient.id}
+                className="cursor-pointer border-border/80"
+                onClick={() => router.push(`/patients/${patient.id}`)}
+              >
+                <CardContent className="space-y-4 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">
+                        {patient.name}
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {patient.age} yrs | {patient.gender}
+                      </p>
+                    </div>
+                    <Badge variant="outline">
+                      {patient.patientId || patient.id.slice(0, 8)}
+                    </Badge>
                   </div>
-                  <Badge variant="outline">
-                    {patient.patientId || patient.id.slice(0, 8)}
-                  </Badge>
-                </div>
-                <dl className="grid gap-3 text-sm">
-                  <div className="flex items-center gap-2 text-foreground">
-                    <Phone className="h-4 w-4 text-primary" />
-                    <span>{patient.phone}</span>
-                  </div>
-                  <div className="flex items-start gap-2 text-muted-foreground">
-                    <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <span className="line-clamp-2">{patient.address}</span>
-                  </div>
-                </dl>
-              </CardContent>
-            </Card>
-          );
-        })}
+                  <dl className="grid gap-3 text-sm">
+                    <div className="flex items-center gap-2 text-foreground">
+                      <Phone className="h-4 w-4 text-primary" />
+                      <span>{patient.phone}</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-muted-foreground">
+                      <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      <span className="line-clamp-2">{patient.address}</span>
+                    </div>
+                  </dl>
+                </CardContent>
+              </Card>
+            );
+          })
+        ) : (
+          <div className="py-12">
+            <EmptyState
+              icon={UsersRound}
+              title="No patients found"
+              description="Try a different search term or register the first patient record."
+              compact
+              className="mx-auto max-w-sm"
+            />
+          </div>
+        )}
       </section>
 
       <section className="desktop-data-table mt-4 hidden flex-1 md:block">
@@ -120,9 +132,15 @@ export function PatientDataTable({ table }: PatientDataTableProps) {
                   <TableRow>
                     <TableCell 
                       colSpan={table.getAllColumns().length + 1} 
-                      className="h-24 text-center"
+                      className="h-[400px] p-0"
                     >
-                      No patients found.
+                      <EmptyState
+                        icon={UsersRound}
+                        title="No patients found"
+                        description="Try a different search term or register the first patient record for this workspace."
+                        compact
+                        className="mx-auto max-w-sm border-none shadow-none bg-transparent"
+                      />
                     </TableCell>
                   </TableRow>
                 )}
@@ -131,18 +149,6 @@ export function PatientDataTable({ table }: PatientDataTableProps) {
           </CardContent>
         </Card>
       </section>
-
-      {rows.length === 0 && (
-        <div className="py-20 text-center">
-          <EmptyState
-            icon={UsersRound}
-            title="No patients found"
-            description="Try a different search term or register the first patient record for this workspace."
-            compact
-            className="mx-auto max-w-sm"
-          />
-        </div>
-      )}
     </>
   );
 }

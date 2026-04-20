@@ -60,18 +60,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, [isInitialLogin, isLoggingOut, mounted]);
 
-  // Clear initial login flag once we've successfully reached a protected page
-  useEffect(() => {
-    const isAuthRoute = pathname === "/login" || pathname === "/change-password";
-    if (mounted && !isAuthRoute && isInitialLogin && !isLoading) {
-      // Small delay to ensure smooth transition
-      const timer = setTimeout(() => {
-        setInitialLogin(false);
-      }, 800);
-      return () => clearTimeout(timer);
-    }
-  }, [pathname, isInitialLogin, isLoading, mounted, setInitialLogin]);
-
   const isAuthRoute = pathname === "/login" || pathname === "/change-password";
 
   if (isLoggingOut && mounted) {
