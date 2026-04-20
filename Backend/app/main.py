@@ -91,7 +91,7 @@ def configure_exception_handlers(app: FastAPI) -> None:
 def configure_routes(app: FastAPI) -> None:
     app.include_router(api_router)
 
-    @app.get("/", tags=["Health"])
+    @app.api_route("/", methods=["GET", "HEAD"], tags=["Health"])
     async def health() -> dict[str, str]:
         return {"data": f"{settings.PROJECT_NAME} API is running"}
 
