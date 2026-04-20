@@ -3,7 +3,7 @@
 High-performance clinical API built with FastAPI and PostgreSQL.
 
 ### 🌐 Live API Docs
-<a href="https://arogyax-api.amithshankar.in/docs" target="_blank"><img src="https://img.shields.io/badge/View-API_Docs-green?style=for-the-badge&logo=fastapi" alt="API Docs"></a>
+<a href="https://arogyax-api.amithshankar.in/docs" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/View-API_Docs-green?style=for-the-badge&logo=fastapi" alt="API Docs"></a>
 
 ### 🏗️ Architecture
 - **Framework**: FastAPI (Async)

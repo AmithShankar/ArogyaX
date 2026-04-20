@@ -3,7 +3,7 @@
 Modern clinical dashboard built with Next.js and pnpm.
 
 ### 🌐 Live Demo
-<a href="https://arogyax.amithshankar.in" target="_blank"><img src="https://img.shields.io/badge/Visit-ArogyaX-blue?style=for-the-badge&logo=nextdotjs" alt="Live Demo"></a>
+<a href="https://arogyax.amithshankar.in" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/Visit-ArogyaX-blue?style=for-the-badge&logo=nextdotjs" alt="Live Demo"></a>
 
 ### 🚀 Tech Stack
 - **Framework**: Next.js 15 (App Router)
