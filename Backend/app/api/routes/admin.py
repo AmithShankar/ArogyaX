@@ -101,3 +101,40 @@ async def get_diagnosis_distribution(
     )
     rows = result.all()
     return ok([{"type": r.type.value, "count": r.count} for r in rows])
+
+
+@router.get("/patient-frequency", status_code=status.HTTP_200_OK)
+async def get_patient_frequency(
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(require_permission("canViewAdminDashboard")),
+):
+    """
+    Returns visit frequency distribution (how many patients have 1 visit, 2 visits, etc.)
+    Performed via nested aggregation for maximum performance.
+    """
+    # Subquery: Count visits per patient
+    subquery = (
+        select(
+            ChartEntry.patient_id,
+            func.count(ChartEntry.id).label("visit_count")
+        )
+        .where(ChartEntry.type == ChartType.visit)
+        .group_by(ChartEntry.patient_id)
+        .subquery()
+    )
+
+    # Main query: Group by visit_count and count occurrences
+    result = await db.execute(
+        select(
+            subquery.c.visit_count,
+            func.count().label("patient_count")
+        )
+        .group_by(subquery.c.visit_count)
+        .order_by(subquery.c.visit_count)
+    )
+    
+    rows = result.all()
+    return ok([
+        {"visits": str(r.visit_count), "count": r.patient_count} 
+        for r in rows
+    ])
