@@ -8,7 +8,8 @@ from app.models.chart_entry import ChartEntry, ChartType
 from app.models.invoice import Invoice
 from app.models.patient import Patient
 from app.models.prescription import Prescription
-from app.models.user import User
+from app.core.utils import get_role_str
+from app.models.user import User, UserRole
 from app.schemas.common import ok
 
 router = APIRouter()
@@ -17,7 +18,7 @@ router = APIRouter()
 @router.get("/stats", status_code=status.HTTP_200_OK)
 async def get_stats(
     db: AsyncSession = Depends(get_db),
-    _: User = Depends(require_permission("canViewAdminDashboard")),
+    current_user: User = Depends(require_permission("canViewAdminDashboard")),
 ):
     total_patients = (await db.execute(select(func.count(Patient.id)))).scalar_one()
     total_users = (await db.execute(select(func.count(User.id)))).scalar_one()
@@ -70,7 +71,7 @@ async def get_monthly_visits(
 @router.get("/revenue", status_code=status.HTTP_200_OK)
 async def get_monthly_revenue(
     db: AsyncSession = Depends(get_db),
-    _: User = Depends(require_permission("canViewAdminDashboard")),
+    current_user: User = Depends(require_permission("canViewAdminDashboard")),
 ):
     result = await db.execute(
         select(
@@ -82,8 +83,16 @@ async def get_monthly_revenue(
         .order_by("year", "month")
     )
     rows = result.all()
+    
     return ok(
-        [{"year": int(r.year), "month": int(r.month), "total": float(r.total)} for r in rows]
+        [
+            {
+                "year": int(r.year), 
+                "month": int(r.month), 
+                "total": float(r.total)
+            } 
+            for r in rows
+        ]
     )
 
 

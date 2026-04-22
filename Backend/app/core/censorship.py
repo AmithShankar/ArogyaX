@@ -25,6 +25,14 @@ _CLINICAL_REDACT_FIELDS: dict[str, Any] = {
     "upload_url": None,
 }
 
+_BILLING_REDACT_FIELDS: dict[str, Any] = {
+    "comments": "[FINANCIAL DATA REDACTED]",
+    "patient_name": "[CENSORED]",
+    "patient_phone": "[CENSORED]",
+    "patientName": "[CENSORED]",
+    "patientPhone": "[CENSORED]",
+}
+
 
 def _is_auditor(user: User) -> bool:
     return get_role_str(user) == UserRole.auditor.value
@@ -61,25 +69,47 @@ def censor_clinical_data(
     return _apply_redactions(data, _CLINICAL_REDACT_FIELDS)
 
 
+def censor_billing_data(
+    user: User,
+    data: Union[Dict[str, Any], List[Dict[str, Any]]],
+) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
+    """Redact financial amounts and comments for auditor-role users."""
+    if not _is_auditor(user):
+        return data
+    if isinstance(data, list):
+        return [_apply_redactions(item, _BILLING_REDACT_FIELDS) for item in data]
+    return _apply_redactions(data, _BILLING_REDACT_FIELDS)
+
+
 def _censor_single_patient(patient: Dict[str, Any]) -> Dict[str, Any]:
     censored = _apply_redactions(patient, _PATIENT_REDACT_FIELDS)
 
-    if "phone" in censored and censored["phone"]:
-        censored["phone"] = _mask_string(censored["phone"])
-    if "address" in censored and censored["address"]:
-        censored["address"] = "CENSORED"
-    if "email" in censored and censored["email"]:
-        censored["email"] = _mask_email(censored["email"])
+    # Handle both snake_case and camelCase aliases
+    phone_keys = ["phone", "patientPhone"]
+    address_keys = ["address", "patientAddress"]
+    name_keys = ["name", "patientName"]
+    dob_keys = ["date_of_birth", "dateOfBirth"]
+    email_keys = ["email", "patientEmail"]
 
-    if "name" in censored and censored["name"]:
-        name_parts = censored["name"].split()
-        if len(name_parts) > 1:
-            censored["name"] = (
-                f"{name_parts[0]} {' '.join('*' * len(p) for p in name_parts[1:])}"
-            )
-        else:
-            n = censored["name"]
-            censored["name"] = f"{n[0]}{'*' * (len(n) - 1)}"
+    for k in phone_keys:
+        if k in censored and censored[k]:
+            censored[k] = "[CENSORED]"
+    
+    for k in address_keys:
+        if k in censored and censored[k]:
+            censored[k] = "[CENSORED]"
+            
+    for k in name_keys:
+        if k in censored and censored[k]:
+            censored[k] = "[CENSORED NAME]"
+            
+    for k in dob_keys:
+        if k in censored and censored[k]:
+            censored[k] = "01-01-1900" # Dummy date
+
+    for k in email_keys:
+        if k in censored and censored[k]:
+            censored[k] = "[CENSORED]"
 
     return censored
 

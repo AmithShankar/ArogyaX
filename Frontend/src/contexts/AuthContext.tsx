@@ -80,7 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           <div className="absolute inset-0 bg-primary/[0.01] pointer-events-none" />
           
           <div className="relative mb-12 flex h-24 w-24 items-center justify-center">
-            <div className="absolute inset-0 animate-ping rounded-full bg-primary/10 duration-[2000ms]" />
+            <div className="absolute inset-0 animate-ping rounded-full bg-primary/10 [animation-duration:2000ms]" />
             <div className="relative flex h-20 w-20 items-center justify-center rounded-3xl bg-card border border-border shadow-2xl">
               <div className="h-12 w-12 rounded-xl bg-muted/20 flex items-center justify-center">
                 <HeartPulse className="h-6 w-6 text-muted-foreground animate-pulse" />

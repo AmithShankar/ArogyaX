@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import get_db
+from app.core.censorship import censor_billing_data
 from app.core.permissions import require_permission
 from app.crud import crud_invoice, crud_patient
 from app.models.user import User
@@ -16,14 +17,15 @@ global_router = APIRouter()
 async def list_invoices(
     patient_id: str,
     db: AsyncSession = Depends(get_db),
-    _: User = Depends(require_permission("canViewBilling")),
+    current_user: User = Depends(require_permission("canViewBilling")),
 ):
     patient = await crud_patient.get_patient(db, patient_id)
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
 
     invoices = await crud_invoice.list_invoices(db, patient_id)
-    return ok([InvoiceResponse.model_validate(inv).model_dump(mode="json", by_alias=True) for inv in invoices])
+    serialized = [InvoiceResponse.model_validate(inv).model_dump(mode="json", by_alias=True) for inv in invoices]
+    return ok(censor_billing_data(current_user, serialized))
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
@@ -41,7 +43,8 @@ async def create_invoice(
     invoice = await crud_invoice.create_invoice(db, patient_id, inv_in)
     request.state.audit_details = f"Created invoice '{invoice.name}' for patient {patient_id}"
     request.state.audit_resource_id = invoice.id
-    return ok(InvoiceResponse.model_validate(invoice).model_dump(mode="json", by_alias=True))
+    serialized = InvoiceResponse.model_validate(invoice).model_dump(mode="json", by_alias=True)
+    return ok(censor_billing_data(current_user, serialized))
 
 
 @router.patch("/{invoice_id}", status_code=status.HTTP_200_OK)
@@ -63,7 +66,8 @@ async def update_invoice(
     request.state.audit_details = f"Updated invoice '{invoice.id}' status to {inv_in.status}"
     request.state.audit_resource_id = invoice.id
     
-    return ok(InvoiceResponse.model_validate(updated_inv).model_dump(mode="json", by_alias=True))
+    serialized = InvoiceResponse.model_validate(updated_inv).model_dump(mode="json", by_alias=True)
+    return ok(censor_billing_data(current_user, serialized))
 
 
 @router.delete("/{invoice_id}", status_code=status.HTTP_200_OK)
@@ -86,7 +90,7 @@ async def delete_invoice(
 @global_router.get("", response_model=None)
 async def list_all_invoices(
     db: AsyncSession = Depends(get_db),
-    _: User = Depends(require_permission("canViewBilling")),
+    current_user: User = Depends(require_permission("canViewBilling")),
 ):
     results = await crud_invoice.list_all_invoices(db)
     formatted = [
@@ -97,4 +101,4 @@ async def list_all_invoices(
         ).model_dump(mode="json", by_alias=True)
         for inv, p_name, p_phone in results
     ]
-    return ok(formatted)
+    return ok(censor_billing_data(current_user, formatted))
