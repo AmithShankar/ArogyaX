@@ -1,13 +1,10 @@
 # ArogyaX - Backend
 
 An async-first clinical API built with **FastAPI** and **PostgreSQL** - designed for real hospital workflows with a layered security model, automatic audit logging on every mutation, and a role-based permission system that goes down to the field level.
-An async-first clinical API built with **FastAPI** and **PostgreSQL** - designed for real hospital workflows with a layered security model, automatic audit logging on every mutation, and a role-based permission system that goes down to the field level.
 
 ### 🌐 Live API Docs
 
 <a href="https://arogyax-api.amithshankar.in/docs" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/View-API_Docs-green?style=for-the-badge&logo=fastapi" alt="API Docs"></a>
-
----
 
 ---
 
@@ -71,58 +68,23 @@ Full interactive documentation at [`/docs`](https://arogyax-api.amithshankar.in/
 ### 📥 Setup & Launch
 
 1. **Environment setup**
-
    ```bash
    python -m venv venv && .\venv\Scripts\activate
    pip install -r requirements.txt
    cp .env.example .env
    ```
-
-1. **Environment setup**
-
-   ```bash
-   python -m venv venv && .\venv\Scripts\activate
-   pip install -r requirements.txt
-   cp .env.example .env
-   ```
-
    Required: `DATABASE_URL`, `JWT_SECRET_KEY`, `INITIAL_ADMIN_PHONE`, `INITIAL_ADMIN_PASSWORD`
 
-1. **Run migrations & seed**
-   Required: `DATABASE_URL`, `JWT_SECRET_KEY`, `INITIAL_ADMIN_PHONE`, `INITIAL_ADMIN_PASSWORD`
-
-1. **Run migrations & seed**
-
+2. **Run migrations & seed**
    ```bash
    alembic upgrade head
    python seed_admin.py
    ```
 
-   ```bash
-   alembic upgrade head
-   python seed_admin.py
-   ```
-
-1. **Start**
+3. **Start**
    ```bash
    python -m uvicorn app.main:app --reload
    ```
-1. **Start**
-   ```bash
-   python -m uvicorn app.main:app --reload
-   ```
-
----
-
-### 🗂️ Maintenance
-
-Archive audit logs older than N days:
-
-```bash
-python scripts/maintenance_archive.py 90
-```
-
----
 
 ---
 
