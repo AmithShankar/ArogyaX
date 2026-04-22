@@ -21,7 +21,7 @@ class ChartEntry(Base):
     __tablename__ = "chart_entries"
 
     id: Mapped[str] = mapped_column(String(50), primary_key=True, index=True)
-    patient_id: Mapped[str] = mapped_column(String(50), ForeignKey("patients.id", ondelete="CASCADE"), nullable=False)
+    patient_id: Mapped[str] = mapped_column(String(50), ForeignKey("patients.id", ondelete="CASCADE"), nullable=False, index=True)
     user_id: Mapped[str] = mapped_column(String(50), ForeignKey("users.id"), nullable=False)
     comments: Mapped[Optional[str]] = mapped_column(Text)
     type: Mapped[ChartType] = mapped_column(SQLEnum(ChartType, name="chart_type"), nullable=False)

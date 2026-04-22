@@ -13,7 +13,7 @@ class Prescription(Base):
 
     id: Mapped[str] = mapped_column(String(50), primary_key=True, index=True)
     patient_id: Mapped[str] = mapped_column(
-        String(50), ForeignKey("patients.id", ondelete="CASCADE"), nullable=False
+        String(50), ForeignKey("patients.id", ondelete="CASCADE"), nullable=False, index=True
     )
     prescribed_by_id: Mapped[str] = mapped_column(
         String(50), ForeignKey("users.id"), nullable=False
