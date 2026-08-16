@@ -24,8 +24,20 @@ export default function ChangePasswordPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPass.length < 4) {
-      setError("Password must be at least 4 characters");
+    if (newPass.length < 8) {
+      setError("Password must be at least 8 characters");
+      return;
+    }
+    if (!/[A-Z]/.test(newPass)) {
+      setError("Password must contain at least one uppercase letter");
+      return;
+    }
+    if (!/[a-z]/.test(newPass)) {
+      setError("Password must contain at least one lowercase letter");
+      return;
+    }
+    if (!/[0-9]/.test(newPass)) {
+      setError("Password must contain at least one number");
       return;
     }
     if (newPass !== confirm) {
@@ -103,9 +115,22 @@ export default function ChangePasswordPage() {
               <div className="rounded-2xl border border-border/70 bg-muted/36 p-4 text-sm text-muted-foreground">
                 <div className="mb-2 flex items-center gap-2 text-foreground">
                   <KeyRound className="h-4 w-4 text-primary" />
-                  <span className="font-semibold">Password note</span>
+                  <span className="font-semibold">Password requirements</span>
                 </div>
-                Pick something only you know. This screen is shown once to move your account from temporary access to personal credentials.
+                <ul className="space-y-1 list-none">
+                  <li className={newPass.length >= 8 ? "text-emerald-600 dark:text-emerald-400" : ""}>
+                    {newPass.length >= 8 ? "✓" : "·"} At least 8 characters
+                  </li>
+                  <li className={/[A-Z]/.test(newPass) ? "text-emerald-600 dark:text-emerald-400" : ""}>
+                    {/[A-Z]/.test(newPass) ? "✓" : "·"} One uppercase letter (A–Z)
+                  </li>
+                  <li className={/[a-z]/.test(newPass) ? "text-emerald-600 dark:text-emerald-400" : ""}>
+                    {/[a-z]/.test(newPass) ? "✓" : "·"} One lowercase letter (a–z)
+                  </li>
+                  <li className={/[0-9]/.test(newPass) ? "text-emerald-600 dark:text-emerald-400" : ""}>
+                    {/[0-9]/.test(newPass) ? "✓" : "·"} One number (0–9)
+                  </li>
+                </ul>
               </div>
               <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
                 {isSubmitting ? "Saving..." : "Save New Password"}

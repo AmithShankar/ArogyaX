@@ -57,6 +57,11 @@ REGISTER_PATIENT_LIMIT = RateLimitPolicy(
     scope="authenticated",
     raw_limits=_split_limits(settings.RATE_LIMIT_PATIENT_REGISTRATION_LIMITS),
 )
+CHANGE_PASSWORD_LIMIT = RateLimitPolicy(
+    name="change_password",
+    scope="authenticated",
+    raw_limits=_split_limits(settings.RATE_LIMIT_CHANGE_PASSWORD_LIMITS),
+)
 AUTHENTICATED_API_LIMIT = RateLimitPolicy(
     name="authenticated_api",
     scope="authenticated",

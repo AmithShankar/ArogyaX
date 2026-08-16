@@ -79,18 +79,19 @@ async def get_monthly_revenue(
             extract("month", Invoice.date).label("month"),
             func.coalesce(func.sum(Invoice.amount), 0).label("total"),
         )
+        .where(Invoice.date.is_not(None))
         .group_by("year", "month")
         .order_by("year", "month")
     )
     rows = result.all()
-    
+
     return ok(
         [
             {
-                "year": int(r.year), 
-                "month": int(r.month), 
+                "year": int(r.year),
+                "month": int(r.month),
                 "total": float(r.total)
-            } 
+            }
             for r in rows
         ]
     )

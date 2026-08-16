@@ -43,7 +43,8 @@ class Settings(BaseSettings):
     RATE_LIMIT_SUMMARY_GENERATE_LIMITS: str = "5/minute"
     RATE_LIMIT_UPLOAD_LIMITS: str = "10/minute"
     RATE_LIMIT_PATIENT_REGISTRATION_LIMITS: str = "10/minute,50/hour"
-    RATE_LIMIT_SKIP_PATHS: list[str] = ["/", "/docs", "/redoc", "/openapi.json"]
+    RATE_LIMIT_CHANGE_PASSWORD_LIMITS: str = "5/minute,10/hour"
+    RATE_LIMIT_SKIP_PATHS: list[str] = ["/", "/health", "/docs", "/redoc", "/openapi.json"]
 
     # Supabase Storage (for production)
     SUPABASE_URL: str = ""

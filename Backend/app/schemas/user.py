@@ -81,6 +81,10 @@ class UserLogin(BaseModel):
 
 
 class ChangePasswordRequest(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+    )
     new_password: str
 
     @field_validator("new_password")

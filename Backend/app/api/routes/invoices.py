@@ -34,7 +34,7 @@ async def create_invoice(
     patient_id: str,
     inv_in: InvoiceCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(require_permission("canViewBilling")),
+    current_user: User = Depends(require_permission("canEditBilling")),
 ):
     patient = await crud_patient.get_patient(db, patient_id)
     if not patient:
@@ -54,7 +54,7 @@ async def update_invoice(
     invoice_id: str,
     inv_in: InvoiceUpdate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(require_permission("canViewBilling")),
+    current_user: User = Depends(require_permission("canEditBilling")),
 ):
     invoice = await crud_invoice.get_invoice(db, invoice_id)
     if not invoice or invoice.patient_id != patient_id:
@@ -63,7 +63,8 @@ async def update_invoice(
     update_data = inv_in.model_dump(exclude_unset=True)
     updated_inv = await crud_invoice.update_invoice(db, invoice, update_data)
     
-    request.state.audit_details = f"Updated invoice '{invoice.id}' status to {inv_in.status}"
+    changes = [k for k, v in inv_in.model_dump(exclude_unset=True).items() if v is not None]
+    request.state.audit_details = f"Updated invoice '{invoice.id}' fields: {', '.join(changes) or 'none'}"
     request.state.audit_resource_id = invoice.id
     
     serialized = InvoiceResponse.model_validate(updated_inv).model_dump(mode="json", by_alias=True)

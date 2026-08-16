@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/table";
 import { PrescriptionsTabProps } from "@/types";
 import { flexRender } from "@tanstack/react-table";
-import { CheckCircle2, Plus, Trash2, XCircle } from "lucide-react";
+import { CheckCircle2, Pill, Plus, Trash2, XCircle } from "lucide-react";
 import { formatDosage, FREQUENCY_LABELS } from "../../../_utils/patient-constants";
 import { PrescriptionForm } from "./PrescriptionForm";
 
@@ -61,6 +61,20 @@ export function PrescriptionsTab({
             />
           </DialogContent>
         </Dialog>
+      )}
+
+      {prescriptions.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="h-14 w-14 rounded-2xl bg-muted/50 flex items-center justify-center mb-4">
+            <Pill className="h-7 w-7 text-muted-foreground/50" />
+          </div>
+          <p className="text-sm font-semibold text-foreground mb-1">No prescriptions yet</p>
+          <p className="text-xs text-muted-foreground max-w-[220px]">
+            {permissions?.canEditPrescriptions
+              ? "Add the first medication order using the button above."
+              : "No medication orders have been recorded for this patient."}
+          </p>
+        </div>
       )}
 
       <div className="mobile-data-stack md:hidden">

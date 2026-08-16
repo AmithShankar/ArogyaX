@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/table";
 import { BillingTabProps } from "@/types";
 import { flexRender } from "@tanstack/react-table";
-import { Calendar, CheckCircle2, Plus, XCircle } from "lucide-react";
+import { Calendar, CheckCircle2, Plus, Receipt, XCircle } from "lucide-react";
 import { InvoiceForm } from "./InvoiceForm";
 
 export function BillingTab({
@@ -61,6 +61,20 @@ export function BillingTab({
           </DialogContent>
         </Dialog>
       )}
+      {invoices.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="h-14 w-14 rounded-2xl bg-muted/50 flex items-center justify-center mb-4">
+            <Receipt className="h-7 w-7 text-muted-foreground/50" />
+          </div>
+          <p className="text-sm font-semibold text-foreground mb-1">No invoices yet</p>
+          <p className="text-xs text-muted-foreground max-w-[220px]">
+            {permissions?.canEditBilling && user?.role !== "auditor"
+              ? "Generate the first invoice using the button above."
+              : "No billing records have been created for this patient."}
+          </p>
+        </div>
+      )}
+
       <div className="mobile-data-stack md:hidden">
         {invoices.map((invoice) => (
           <Card key={invoice.id}>
@@ -98,7 +112,7 @@ export function BillingTab({
               </div>
               <p className="text-xs text-muted-foreground flex items-center gap-1.5 font-medium">
                 <Calendar className="h-3 w-3" />
-                {new Date(invoice.date).toLocaleDateString()}
+                {invoice.date ? new Date(invoice.date).toLocaleDateString() : "—"}
               </p>
               {invoice.status === "pending" &&
                 permissions?.canEditBilling &&

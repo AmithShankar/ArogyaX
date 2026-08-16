@@ -55,9 +55,9 @@ def configure_middleware(app: FastAPI) -> None:
         CORSMiddleware,
         allow_origins=settings.cors_origins_list,
         allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-        expose_headers=["*"],
+        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allow_headers=["Content-Type", "Accept", "Authorization", "X-Requested-With"],
+        expose_headers=["X-Total-Count", "Content-Disposition"],
     )
 
     if settings.USE_PROXY_HEADERS:
@@ -92,8 +92,29 @@ def configure_routes(app: FastAPI) -> None:
     app.include_router(api_router)
 
     @app.api_route("/", methods=["GET", "HEAD"], tags=["Health"])
-    async def health() -> dict[str, str]:
-        return {"data": f"{settings.PROJECT_NAME} API is running"}
+    @app.api_route("/health", methods=["GET", "HEAD"], tags=["Health"])
+    async def health() -> dict:
+        from sqlalchemy import text
+        from app.db.database import AsyncSessionLocal
+        import time
+
+        db_status = "ok"
+        db_latency_ms: float | None = None
+        try:
+            t0 = time.monotonic()
+            async with AsyncSessionLocal() as session:
+                await session.execute(text("SELECT 1"))
+            db_latency_ms = round((time.monotonic() - t0) * 1000, 1)
+        except Exception as exc:
+            logger.error("Health check DB ping failed: %s", exc)
+            db_status = "degraded"
+
+        return {
+            "status": "ok" if db_status == "ok" else "degraded",
+            "service": settings.PROJECT_NAME,
+            "db": db_status,
+            "db_latency_ms": db_latency_ms,
+        }
 
 
 app = create_app()

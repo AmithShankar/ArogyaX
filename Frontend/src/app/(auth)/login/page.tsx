@@ -25,8 +25,8 @@ import { LOGIN_FEATURES } from "./_constants/login-features";
 export default function LoginPage() {
   const { login, user, isAuthenticated } = useAuth();
   const router = useRouter();
-  const [phone, setPhone] = useState("0000");
-  const [password, setPassword] = useState("admin");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -230,7 +230,7 @@ export default function LoginPage() {
                 >
                   {isSubmitting ? (
                     <div className="flex items-center gap-3">
-                      <div className="h-5 w-5 animate-spin rounded-full border-3 border-current border-t-transparent" />
+                      <div className="h-5 w-5 animate-spin rounded-full border-[3px] border-current border-t-transparent" />
                       Secure Entry...
                     </div>
                   ) : (

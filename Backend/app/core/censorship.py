@@ -1,7 +1,7 @@
 import re
 from typing import Any, Union, Dict, List
 
-from app.core.utils import get_role_str
+from app.core.permissions import ROLE_PERMISSIONS
 from app.models.user import User, UserRole
 
 # Fields redacted for each censor category
@@ -34,8 +34,25 @@ _BILLING_REDACT_FIELDS: dict[str, Any] = {
 }
 
 
+def _can_view_sensitive(user: User) -> bool:
+    """Returns True only for roles with canViewSensitiveData (hospital_admin, owner)."""
+    return ROLE_PERMISSIONS.get(user.role, {}).get("canViewSensitiveData", False)
+
+
 def _is_auditor(user: User) -> bool:
-    return get_role_str(user) == UserRole.auditor.value
+    return user.role == UserRole.auditor
+
+
+def _can_view_patient_pii(user: User) -> bool:
+    """Patient PII (name, phone, address, DOB) is accessible to all roles except auditors.
+    Auditors review processes and compliance workflows — not individual patient identity.
+    """
+    return not _is_auditor(user)
+
+
+def _can_view_clinical(user: User) -> bool:
+    """Clinical data (chart notes, medications) is accessible to roles with canViewCharting."""
+    return ROLE_PERMISSIONS.get(user.role, {}).get("canViewCharting", False)
 
 
 def _apply_redactions(item: Dict[str, Any], redact_map: dict[str, Any]) -> Dict[str, Any]:
@@ -50,7 +67,11 @@ def censor_patient_data(
     user: User,
     data: Union[Dict[str, Any], List[Dict[str, Any]]],
 ) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
-    if not _is_auditor(user):
+    """Redact PII fields for auditors.
+    All clinical and administrative roles can see full patient PII.
+    Auditors review compliance workflows, not individual patient identity.
+    """
+    if _can_view_patient_pii(user):
         return data
     if isinstance(data, list):
         return [_censor_single_patient(item) for item in data]
@@ -61,8 +82,11 @@ def censor_clinical_data(
     user: User,
     data: Union[Dict[str, Any], List[Dict[str, Any]]],
 ) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
-    """Redact clinical notes and medication fields for auditor-role users."""
-    if not _is_auditor(user):
+    """Redact clinical notes and medication fields for roles without canViewCharting.
+    Roles with canViewCharting (doctor, nurse, lab_tech, hospital_admin, owner, auditor)
+    can see full clinical data.
+    """
+    if _can_view_clinical(user):
         return data
     if isinstance(data, list):
         return [_apply_redactions(item, _CLINICAL_REDACT_FIELDS) for item in data]
@@ -73,8 +97,8 @@ def censor_billing_data(
     user: User,
     data: Union[Dict[str, Any], List[Dict[str, Any]]],
 ) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
-    """Redact financial amounts and comments for auditor-role users."""
-    if not _is_auditor(user):
+    """Redact financial amounts and comments for roles without canViewSensitiveData."""
+    if _can_view_sensitive(user):
         return data
     if isinstance(data, list):
         return [_apply_redactions(item, _BILLING_REDACT_FIELDS) for item in data]
@@ -143,8 +167,8 @@ def censor_audit_log(
     user: User,
     data: List[Dict[str, Any]],
 ) -> List[Dict[str, Any]]:
-    """Redact sensitive clinical details from audit logs for auditors."""
-    if not _is_auditor(user):
+    """Redact embedded clinical values from audit log details for non-sensitive roles."""
+    if _can_view_sensitive(user):
         return data
 
     censored_list = []

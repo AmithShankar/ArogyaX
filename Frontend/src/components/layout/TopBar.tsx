@@ -7,8 +7,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { APP_NAME } from "@/lib/app-config";
 import { cn } from "@/lib/utils";
 import { ROLE_LABELS } from "@/types";
-import { Bell, Moon, Search, Sun } from "lucide-react";
+import { Bell, ChevronRight, Moon, Search, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 function getPageMeta(pathname: string) {
@@ -27,6 +28,18 @@ function getPageMeta(pathname: string) {
   if (pathname.startsWith("/admin"))
     return { title: "Admin Overview",      subtitle: "Staffing, revenue, and operational visibility" };
   return   { title: "Operations Dashboard", subtitle: "Care delivery, coordination, and workflow status" };
+}
+
+type Crumb = { label: string; href?: string };
+
+function getBreadcrumbs(pathname: string): Crumb[] | null {
+  if (pathname.startsWith("/patients/")) {
+    return [
+      { label: "Patients", href: "/patients" },
+      { label: "Patient Record" },
+    ];
+  }
+  return null;
 }
 
 export function TopBar() {
@@ -78,6 +91,7 @@ export function TopBar() {
   }
 
   const pageMeta = getPageMeta(pathname);
+  const breadcrumbs = getBreadcrumbs(pathname);
 
   const initials = user.name
     .split(" ")
@@ -104,9 +118,31 @@ export function TopBar() {
           <div className="h-6 w-px shrink-0 bg-border/60" />
 
           <div className="min-w-0 flex-1">
-            <p className="text-primary font-bold tracking-widest uppercase text-[10px] leading-none mb-1.5">
-              {APP_NAME}
-            </p>
+            {breadcrumbs ? (
+              <nav aria-label="Breadcrumb" className="flex items-center gap-1 mb-1">
+                {breadcrumbs.map((crumb, i) => (
+                  <span key={i} className="flex items-center gap-1">
+                    {i > 0 && <ChevronRight className="h-3 w-3 text-muted-foreground/50 shrink-0" />}
+                    {crumb.href ? (
+                      <Link
+                        href={crumb.href}
+                        className="text-[10px] font-bold tracking-widest uppercase text-primary/70 hover:text-primary transition-colors truncate"
+                      >
+                        {crumb.label}
+                      </Link>
+                    ) : (
+                      <span className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground truncate">
+                        {crumb.label}
+                      </span>
+                    )}
+                  </span>
+                ))}
+              </nav>
+            ) : (
+              <p className="text-primary font-bold tracking-widest uppercase text-[10px] leading-none mb-1.5">
+                {APP_NAME}
+              </p>
+            )}
             <h1 className="text-[1.05rem] font-semibold text-foreground truncate leading-tight">
               {pageMeta.title}
             </h1>

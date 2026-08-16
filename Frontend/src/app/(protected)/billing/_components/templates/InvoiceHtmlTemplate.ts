@@ -1,22 +1,33 @@
 import { InvoiceWithPatient } from "@/types";
 
+/** Escapes HTML special characters to prevent XSS in the print window. */
+function esc(value: string | null | undefined): string {
+  if (value == null) return "";
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;");
+}
+
 export function getInvoiceHtml(invoice: InvoiceWithPatient) {
   return `
     <!DOCTYPE html>
     <html>
       <head>
-        <title>Invoice - ${invoice.id}</title>
+        <title>Invoice - ${esc(invoice.id)}</title>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
         <style>
-          body { 
-            font-family: 'Inter', sans-serif; 
-            padding: 40px; 
+          body {
+            font-family: 'Inter', sans-serif;
+            padding: 40px;
             color: #1e293b;
             line-height: 1.5;
           }
-          .header { 
-            display: flex; 
-            justify-content: space-between; 
+          .header {
+            display: flex;
+            justify-content: space-between;
             align-items: flex-start;
             border-bottom: 2px solid #e2e8f0;
             padding-bottom: 20px;
@@ -33,12 +44,12 @@ export function getInvoiceHtml(invoice: InvoiceWithPatient) {
           .table td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 15px; }
           .totals { margin-top: 30px; text-align: right; }
           .total-row { display: flex; justify-content: flex-end; gap: 20px; font-size: 18px; font-weight: 700; }
-          .status-badge { 
-            display: inline-block; 
-            padding: 4px 12px; 
-            border-radius: 9999px; 
-            font-size: 12px; 
-            font-weight: 600; 
+          .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
             text-transform: uppercase;
             background: #f1f5f9;
             color: #475569;
@@ -58,22 +69,22 @@ export function getInvoiceHtml(invoice: InvoiceWithPatient) {
           </div>
           <div class="invoice-details">
             <div style="font-weight: 700; font-size: 20px;">INVOICE</div>
-            <div class="invoice-id">#${invoice.id}</div>
-            <div style="margin-top: 8px;">Date: ${new Date(invoice.date).toLocaleDateString("en-IN")}</div>
+            <div class="invoice-id">#${esc(invoice.id)}</div>
+            <div style="margin-top: 8px;">Date: ${invoice.date ? new Date(invoice.date).toLocaleDateString("en-IN") : "—"}</div>
           </div>
         </div>
 
         <div style="display: flex; gap: 60px;">
           <div class="section" style="flex: 1;">
             <div class="section-title">Patient Details</div>
-            <div class="patient-info">${invoice.patientName}</div>
-            <div style="color: #64748b; font-size: 14px; margin-top: 4px;">Phone: ${invoice.patientPhone || "N/A"}</div>
-            <div style="color: #64748b; font-size: 14px;">Patient ID: ${invoice.patientId}</div>
+            <div class="patient-info">${esc(invoice.patientName)}</div>
+            <div style="color: #64748b; font-size: 14px; margin-top: 4px;">Phone: ${esc(invoice.patientPhone) || "N/A"}</div>
+            <div style="color: #64748b; font-size: 14px;">Patient ID: ${esc(invoice.patientId)}</div>
           </div>
           <div class="section" style="flex: 1;">
             <div class="section-title">Payment Status</div>
             <div class="status-badge ${invoice.status === "paid" ? "status-paid" : ""}">
-              ${invoice.status === "pending" ? "Awaiting Payment" : invoice.status}
+              ${invoice.status === "pending" ? "Awaiting Payment" : esc(invoice.status)}
             </div>
           </div>
         </div>
@@ -87,7 +98,7 @@ export function getInvoiceHtml(invoice: InvoiceWithPatient) {
           </thead>
           <tbody>
             <tr>
-              <td style="font-weight: 600;">${invoice.name}</td>
+              <td style="font-weight: 600;">${esc(invoice.name)}</td>
               <td style="text-align: right; font-weight: 600;">₹${Number(
                 invoice.amount
               ).toLocaleString()}</td>

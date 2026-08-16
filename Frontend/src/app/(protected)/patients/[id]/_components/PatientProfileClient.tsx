@@ -18,8 +18,8 @@ import {
 import {
     ArrowLeft
 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 // API
@@ -62,6 +62,7 @@ export function PatientProfileClient({
   }, []);
 
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "history");
 
@@ -70,16 +71,24 @@ export function PatientProfileClient({
     if (tab) setActiveTab(tab);
   }, [searchParams]);
 
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", tab);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
   const [summary, setSummary] = useState<PatientSummaryType | null>(initialSummary);
   const [summaryLoading, setSummaryLoading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [previewType, setPreviewType] = useState<"image" | "pdf" | null>(null);
 
-  const handlePreview = (url: string) => {
-    const isPdf = url.toLowerCase().endsWith(".pdf");
-    setPreviewType(isPdf ? "pdf" : "image");
-    setPreviewUrl(url);
-  };
+  // Preview state — url + type grouped together
+  const [preview, setPreview] = useState<{ url: string | null; type: "image" | "pdf" | null }>({
+    url: null,
+    type: null,
+  });
+  const handlePreview = useCallback((url: string) => {
+    setPreview({ url, type: url.toLowerCase().endsWith(".pdf") ? "pdf" : "image" });
+  }, []);
 
   const [chartFilter, setChartFilter] = useState<string>("all");
   const [chartDialog, setChartDialog] = useState(false);
@@ -91,16 +100,22 @@ export function PatientProfileClient({
   const [editPatientDialog, setEditPatientDialog] = useState(false);
   const [deletePatientConfirm, setDeletePatientConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [labDialog, setLabDialog] = useState(false);
-  const [labFile, setLabFile] = useState<File | null>(null);
-  const [labLoading, setLabLoading] = useState(false);
   const [billingDialog, setBillingDialog] = useState(false);
   const [updatingInvoiceId, setUpdatingInvoiceId] = useState<string | null>(null);
 
-  // New states for confirmation dialogs
-  const [confirmChartDelete, setConfirmChartDelete] = useState<{ open: boolean; id: string | null }>({ open: false, id: null });
-  const [confirmRxDelete, setConfirmRxDelete] = useState<{ open: boolean; id: string | null }>({ open: false, id: null });
-  const [isProcessingAction, setIsProcessingAction] = useState(false);
+  // Lab upload state — dialog, file, and loading grouped together
+  const [labUpload, setLabUpload] = useState<{ open: boolean; file: File | null; loading: boolean }>({
+    open: false,
+    file: null,
+    loading: false,
+  });
+  const setLabDialog = (open: boolean) => setLabUpload((s) => ({ ...s, open }));
+  const setLabFile = (file: File | null) => setLabUpload((s) => ({ ...s, file }));
+  const setLabLoading = (loading: boolean) => setLabUpload((s) => ({ ...s, loading }));
+
+  // Confirmation dialogs — id + loading state grouped per action
+  const [confirmChartDelete, setConfirmChartDelete] = useState<{ open: boolean; id: string | null; loading: boolean }>({ open: false, id: null, loading: false });
+  const [confirmRxDelete, setConfirmRxDelete] = useState<{ open: boolean; id: string | null; loading: boolean }>({ open: false, id: null, loading: false });
 
 
   useEffect(() => {
@@ -109,45 +124,43 @@ export function PatientProfileClient({
     setInvoices(initialInvoices);
   }, [initialCharts, initialPrescriptions, initialInvoices]);
 
-  const handleDeleteChartEntry = (entryId: string) => {
-    setConfirmChartDelete({ open: true, id: entryId });
-  };
+  const handleDeleteChartEntry = useCallback((entryId: string) => {
+    setConfirmChartDelete({ open: true, id: entryId, loading: false });
+  }, []);
 
   const executeDeleteChartEntry = async () => {
     if (!confirmChartDelete.id) return;
-    setIsProcessingAction(true);
+    setConfirmChartDelete((s) => ({ ...s, loading: true }));
     try {
       await deleteChartEntryApi(id, confirmChartDelete.id);
       setCharts((prev) => prev.filter((c) => c.id !== confirmChartDelete.id));
       toast.success("Entry removed");
-      setConfirmChartDelete({ open: false, id: null });
+      setConfirmChartDelete({ open: false, id: null, loading: false });
     } catch (error) {
       toast.error("Failed to delete entry");
-    } finally {
-      setIsProcessingAction(false);
+      setConfirmChartDelete((s) => ({ ...s, loading: false }));
     }
   };
 
-  const handleDeletePrescription = (rxId: string) => {
-    setConfirmRxDelete({ open: true, id: rxId });
-  };
+  const handleDeletePrescription = useCallback((rxId: string) => {
+    setConfirmRxDelete({ open: true, id: rxId, loading: false });
+  }, []);
 
   const executeDeletePrescription = async () => {
     if (!confirmRxDelete.id) return;
-    setIsProcessingAction(true);
+    setConfirmRxDelete((s) => ({ ...s, loading: true }));
     try {
       await deletePrescriptionApi(id, confirmRxDelete.id);
       setPrescriptions((prev) => prev.filter((r) => r.id !== confirmRxDelete.id));
       toast.success("Prescription removed");
-      setConfirmRxDelete({ open: false, id: null });
+      setConfirmRxDelete({ open: false, id: null, loading: false });
     } catch (error) {
       toast.error("Failed to delete prescription");
-    } finally {
-      setIsProcessingAction(false);
+      setConfirmRxDelete((s) => ({ ...s, loading: false }));
     }
   };
 
-  const handleTogglePrescriptionStatus = async (rxId: string, currentStatus: string) => {
+  const handleTogglePrescriptionStatus = useCallback(async (rxId: string, currentStatus: string) => {
     const newStatus = currentStatus === "active" ? "void" : "active";
     try {
       const updated = await updatePrescriptionApi(id, rxId, { status: newStatus as any });
@@ -156,7 +169,7 @@ export function PatientProfileClient({
     } catch (error) {
       toast.error("Failed to update status");
     }
-  };
+  }, [id]);
 
   const handleUpdatePatient = async (data: any) => {
     try {
@@ -190,7 +203,7 @@ export function PatientProfileClient({
     }
   };
 
-  const handleUpdateInvoiceStatus = async (invoiceId: string, status: "paid" | "rejected") => {
+  const handleUpdateInvoiceStatus = useCallback(async (invoiceId: string, status: "paid" | "rejected") => {
     setUpdatingInvoiceId(invoiceId);
     try {
       const updated = await updateInvoiceApi(id, invoiceId, { status });
@@ -201,7 +214,7 @@ export function PatientProfileClient({
     } finally {
       setUpdatingInvoiceId(null);
     }
-  };
+  }, [id]);
 
   const generateSummary = async () => {
     setSummaryLoading(true);
@@ -225,7 +238,7 @@ export function PatientProfileClient({
     user,
     handleTogglePrescriptionStatus,
     handleDeletePrescription,
-  }), [permissions, user]);
+  }), [permissions, user, handleTogglePrescriptionStatus, handleDeletePrescription]);
 
   const rxData = useMemo(() => 
     prescriptions.filter((rx) => user?.role === "pharmacy" ? rx.status === "active" : true),
@@ -240,7 +253,7 @@ export function PatientProfileClient({
     getSortedRowModel: getSortedRowModel(),
   });
 
-  const labColumns = useMemo(() => getLabColumns({ handlePreview }), []);
+  const labColumns = useMemo(() => getLabColumns({ handlePreview }), [handlePreview]);
   const labEntries = useMemo(() => charts.filter((chart) => chart.type === "lab"), [charts]);
 
   const labTable = useReactTable({
@@ -257,7 +270,7 @@ export function PatientProfileClient({
     user,
     updatingInvoiceId,
     handleUpdateInvoiceStatus,
-  }), [permissions, user, updatingInvoiceId]);
+  }), [permissions, user, updatingInvoiceId, handleUpdateInvoiceStatus]);
 
   const billTable = useReactTable({
     data: invoices,
@@ -344,7 +357,7 @@ export function PatientProfileClient({
         />
       </section>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-5">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-5">
         <TabsList>
           <TabsTrigger value="history">History</TabsTrigger>
           <TabsTrigger value="current">Current Visit</TabsTrigger>
@@ -404,11 +417,11 @@ export function PatientProfileClient({
               id={id}
               permissions={permissions}
               labEntries={labEntries}
-              labDialog={labDialog}
+              labDialog={labUpload.open}
               setLabDialog={setLabDialog}
-              labFile={labFile}
+              labFile={labUpload.file}
               setLabFile={setLabFile}
-              labLoading={labLoading}
+              labLoading={labUpload.loading}
               setLabLoading={setLabLoading}
               setCharts={setCharts}
               handlePreview={handlePreview}
@@ -439,9 +452,9 @@ export function PatientProfileClient({
       </Tabs>
 
       <ReportPreviewDialog
-        previewUrl={previewUrl}
-        previewType={previewType}
-        onClose={() => setPreviewUrl(null)}
+        previewUrl={preview.url}
+        previewType={preview.type}
+        onClose={() => setPreview({ url: null, type: null })}
         user={user}
       />
 
@@ -464,25 +477,25 @@ export function PatientProfileClient({
         />
       )}
 
-      <ConfirmationDialog 
+      <ConfirmationDialog
         open={confirmChartDelete.open}
-        onOpenChange={(open) => setConfirmChartDelete({ ...confirmChartDelete, open })}
+        onOpenChange={(open) => setConfirmChartDelete((s) => ({ ...s, open }))}
         title="Delete Clinical Entry"
         description="Are you sure you want to permanently delete this clinical record? This action cannot be undone and will be logged for audit purposes."
         onConfirm={executeDeleteChartEntry}
         confirmLabel="Delete Entry"
-        isLoading={isProcessingAction}
+        isLoading={confirmChartDelete.loading}
         variant="danger"
       />
 
-      <ConfirmationDialog 
+      <ConfirmationDialog
         open={confirmRxDelete.open}
-        onOpenChange={(open) => setConfirmRxDelete({ ...confirmRxDelete, open })}
+        onOpenChange={(open) => setConfirmRxDelete((s) => ({ ...s, open }))}
         title="Delete Prescription"
         description="Are you sure you want to remove this medication from the patient's record? This trail will remain in clinical history but the order will be voided."
         onConfirm={executeDeletePrescription}
         confirmLabel="Void & Delete"
-        isLoading={isProcessingAction}
+        isLoading={confirmRxDelete.loading}
         variant="danger"
       />
     </div>

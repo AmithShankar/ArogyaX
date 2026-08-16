@@ -4,6 +4,7 @@
 .vscode/
 .claude/
 .code-review-graph/
+.code-review-graphignore
 .history/
 .idea/
 *.swp
@@ -15,9 +16,13 @@
 .DS_Store
 Thumbs.db
 
-# --- Logs & Temp ---
+# --- Logs, Traces & Temp ---
 *.log
+*.har
 scratch/
+
+# --- Build Artifacts & Caches ---
+*.tsbuildinfo
 
 # --- Environments (Global Security) ---
 .env

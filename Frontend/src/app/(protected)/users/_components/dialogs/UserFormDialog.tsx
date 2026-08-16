@@ -17,7 +17,8 @@ import {
     SelectValue
 } from "@/components/ui/select";
 import { ROLE_LABELS, UserFormDialogProps, UserRole } from "@/types";
-import { Copy } from "lucide-react";
+import { Check, Copy } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export function UserFormDialog({
@@ -37,6 +38,15 @@ export function UserFormDialog({
   onSubmit,
   allRoles,
 }: UserFormDialogProps) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyPassword = () => {
+    navigator.clipboard.writeText(generatedPassword);
+    setCopied(true);
+    toast.success("Password copied to clipboard");
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -94,14 +104,16 @@ export function UserFormDialog({
                 <Input value={generatedPassword} readOnly className="font-mono text-sm" />
                 <Button
                   type="button"
-                  variant="outline"
+                  variant={copied ? "default" : "outline"}
                   size="icon"
-                  onClick={() => {
-                    navigator.clipboard.writeText(generatedPassword);
-                    toast("Copied!");
-                  }}
+                  onClick={handleCopyPassword}
+                  className="shrink-0 transition-all"
                 >
-                  <Copy className="h-4 w-4" />
+                  {copied ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">

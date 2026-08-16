@@ -74,11 +74,13 @@ export function InvoicePreviewDialog({
                     <div className="text-2xl font-black text-foreground tracking-tight print:text-slate-900">INVOICE</div>
                     <div className="text-sm font-mono text-muted-foreground mt-1"># {selectedInvoice.id}</div>
                     <div className="text-sm text-foreground/80 mt-2 font-bold print:text-slate-600">
-                      Date: {new Date(selectedInvoice.date).toLocaleDateString("en-IN", {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                      })}
+                      Date: {selectedInvoice.date
+                        ? new Date(selectedInvoice.date).toLocaleDateString("en-IN", {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric'
+                          })
+                        : '—'}
                     </div>
                   </div>
                 </div>

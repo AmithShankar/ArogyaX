@@ -43,18 +43,13 @@ export interface PatientSearchProps {
 
 // ─── Dashboard Role Extras ───────────────────────────────────────────────────
 
-/** Invoice extended with a resolved patient name for UI display */
-export interface InvoiceWithPatientName extends Invoice {
-  patientName: string;
-}
-
 /** Prescription extended with a resolved patient name for UI display */
 export interface PrescriptionWithPatientName extends Prescription {
   patientName: string;
 }
 
 export interface AdminExtraProps {
-  recentInvoices: InvoiceWithPatientName[];
+  recentInvoices: InvoiceWithPatient[];
   totalRevenue: number;
   monthRevenue: number;
 }

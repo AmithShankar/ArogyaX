@@ -3,7 +3,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import get_db, get_current_user
 from app.core.permissions import require_permission, get_permissions
-from app.core.censorship import censor_patient_data
 from app.core.utils import get_role_str
 from app.crud import crud_user
 from app.models.user import User
@@ -23,8 +22,7 @@ async def list_users(
         raise HTTPException(status_code=403, detail="Forbidden")
         
     users = await crud_user.list_users(db)
-    raw_data = [UserResponse.model_validate(u).model_dump(by_alias=True) for u in users]
-    return ok(censor_patient_data(current_user, raw_data))
+    return ok([UserResponse.model_validate(u).model_dump(by_alias=True) for u in users])
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
@@ -60,8 +58,7 @@ async def get_user(
     user = await crud_user.get_user_by_id(db, user_id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    raw_data = UserResponse.model_validate(user).model_dump(by_alias=True)
-    return ok(censor_patient_data(current_user, raw_data))
+    return ok(UserResponse.model_validate(user).model_dump(by_alias=True))
 
 
 @router.put("/{user_id}", status_code=status.HTTP_200_OK)

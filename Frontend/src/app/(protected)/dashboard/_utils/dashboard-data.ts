@@ -25,15 +25,16 @@ export function processDashboardData(
     .slice(0, 5);
 
   const recentInvoices = [...invoices]
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .sort((a, b) => (b.date ? new Date(b.date).getTime() : 0) - (a.date ? new Date(a.date).getTime() : 0))
     .slice(0, 5);
 
   const totalRevenue = invoices.reduce((sum, invoice) => sum + Number(invoice.amount), 0);
 
+  const now = new Date();
   const currentMonthRevenue = invoices
     .filter((invoice) => {
+      if (!invoice.date) return false;
       const invoiceDate = new Date(invoice.date);
-      const now = new Date();
       return (
         invoiceDate.getMonth() === now.getMonth() &&
         invoiceDate.getFullYear() === now.getFullYear()

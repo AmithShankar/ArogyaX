@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.dependencies import get_current_user, get_db
 from app.core.config import settings
 from app.core.permissions import get_permissions
-from app.core.rate_limit import LOGIN_LIMIT, rate_limit_dependency
+from app.core.rate_limit import CHANGE_PASSWORD_LIMIT, LOGIN_LIMIT, rate_limit_dependency
 from app.core.security import create_access_token, verifyPassword
 from app.crud import crud_user
 from app.models.user import User, UserStatus
@@ -90,7 +90,11 @@ async def get_me(current_user: User = Depends(get_current_user)):
     return ok(data)
 
 
-@router.post("/change-password", status_code=status.HTTP_200_OK)
+@router.post(
+    "/change-password",
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(rate_limit_dependency(CHANGE_PASSWORD_LIMIT))],
+)
 async def change_password(
     body: ChangePasswordRequest,
     response: Response,

@@ -18,6 +18,24 @@ from app.core.config import settings
 ALLOWED_CONTENT_TYPES = {"application/pdf", "image/jpeg", "image/png", "image/jpg"}
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
 
+# Magic byte signatures to verify actual file content regardless of content-type header
+_MAGIC_SIGNATURES = [
+    (b"%PDF", "application/pdf"),
+    (b"\xff\xd8\xff", "image/jpeg"),
+    (b"\x89PNG\r\n\x1a\n", "image/png"),
+]
+
+
+def _validate_magic_bytes(data: bytes) -> None:
+    """Reject files whose header doesn't match any known safe signature."""
+    for signature, _ in _MAGIC_SIGNATURES:
+        if data[:len(signature)] == signature:
+            return
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail="File content does not match an allowed format (PDF, JPEG, or PNG).",
+    )
+
 # Initialize Supabase client if library is installed and keys are present
 _supabase: Optional[Any] = None
 if _HAS_SUPABASE and settings.SUPABASE_URL and settings.SUPABASE_SERVICE_KEY:
@@ -42,6 +60,9 @@ async def save_lab_file(patient_id: str, file: UploadFile) -> str:
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="File exceeds 10 MB limit.",
         )
+
+    # Verify the actual file content matches a known safe signature
+    _validate_magic_bytes(contents)
 
     ext = Path(file.filename).suffix.lower() if file.filename else ".bin"
     filename = f"{uuid.uuid4()}{ext}"

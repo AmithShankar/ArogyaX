@@ -6,18 +6,12 @@ import {
     fetchPatients
 } from "@/lib/server-api";
 import { getUser } from "@/lib/server-auth";
+import { AuditLogResponse, InvoiceWithPatient } from "@/types";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { DashboardHero } from "./_components/layout/DashboardHero";
 import { WorkflowPulse } from "./_components/layout/WorkflowPulse";
-import { AdminExtra } from "./_components/roles/AdminExtra";
-import { AuditorExtra } from "./_components/roles/AuditorExtra";
-import { DoctorExtra } from "./_components/roles/DoctorExtra";
-import { LabTechExtra } from "./_components/roles/LabTechExtra";
-import { NurseExtra } from "./_components/roles/NurseExtra";
-import { OwnerExtra } from "./_components/roles/OwnerExtra";
-import { PharmacyExtra } from "./_components/roles/PharmacyExtra";
-import { ReceptionExtra } from "./_components/roles/ReceptionExtra";
+import { DashboardRoleSlot } from "./_components/roles/DashboardRoleSlot";
 import { PatientSearch } from "./_components/search/PatientSearch";
 import { processDashboardData } from "./_utils/dashboard-data";
 import { getStatsConfig } from "./_utils/stats-config";
@@ -25,8 +19,6 @@ import { getStatsConfig } from "./_utils/stats-config";
 export const metadata: Metadata = {
   title: "Operations Dashboard | ArogyaX",
 };
-
-import { AuditLogResponse, InvoiceWithPatient } from "@/types";
 
 export default async function DashboardPage() {
   const user = await getUser();
@@ -45,7 +37,9 @@ export default async function DashboardPage() {
     permissions.canViewBilling
       ? fetchAllPatientInvoices(patients)
       : (Promise.resolve([]) as Promise<InvoiceWithPatient[]>),
-    permissions.canViewAuditLog ? fetchAuditLogs() : Promise.resolve({ items: [], total: 0, page: 1, limit: 10, pages: 1 } as AuditLogResponse),
+    permissions.canViewAuditLog
+      ? fetchAuditLogs()
+      : Promise.resolve({ items: [], total: 0, page: 1, limit: 10, pages: 1 } as AuditLogResponse),
   ]);
 
   const {
@@ -75,23 +69,6 @@ export default async function DashboardPage() {
     auditTotal: auditData.total ?? 0,
   });
 
-  const extraMap = {
-    doctor: <DoctorExtra recentCharts={recentCharts} patients={patients} />,
-    nurse: <NurseExtra vitals={recentVitals} patients={patients} />,
-    reception: <ReceptionExtra recentPatients={recentPatients} />,
-    pharmacy: <PharmacyExtra prescriptions={prescriptions} />,
-    lab_tech: <LabTechExtra labs={recentLabs} patients={patients} />,
-    hospital_admin: (
-      <AdminExtra
-        recentInvoices={recentInvoices}
-        totalRevenue={totalRevenue}
-        monthRevenue={currentMonthRevenue}
-      />
-    ),
-    owner: <OwnerExtra logs={auditData.items ?? []} />,
-    auditor: <AuditorExtra logs={auditData.items ?? []} />,
-  };
-
   const overviewHighlights = [
     `${patients.length} active patients`,
     `${recentCharts.length} recent chart updates`,
@@ -105,7 +82,7 @@ export default async function DashboardPage() {
           <DashboardHero highlights={overviewHighlights} stats={stats} />
 
           <div className="flex flex-col gap-3">
-            <WorkflowPulse 
+            <WorkflowPulse
               chartsCount={recentCharts.length}
               labsCount={recentLabs.length}
               revenue={permissions.canViewBilling ? `₹${currentMonthRevenue.toLocaleString()}` : undefined}
@@ -118,8 +95,19 @@ export default async function DashboardPage() {
         </div>
       </section>
 
-      {extraMap[user.role] ?? null}
+      <DashboardRoleSlot
+        role={user.role}
+        recentCharts={recentCharts}
+        patients={patients}
+        recentVitals={recentVitals}
+        recentPatients={recentPatients}
+        prescriptions={prescriptions}
+        recentLabs={recentLabs}
+        recentInvoices={recentInvoices}
+        totalRevenue={totalRevenue}
+        currentMonthRevenue={currentMonthRevenue}
+        auditLogs={auditData.items ?? []}
+      />
     </div>
   );
 }
-
