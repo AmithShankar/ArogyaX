@@ -25,8 +25,8 @@ import { LOGIN_FEATURES } from "./_constants/login-features";
 export default function LoginPage() {
   const { login, user, isAuthenticated } = useAuth();
   const router = useRouter();
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("0000");
+  const [password, setPassword] = useState("admin");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
